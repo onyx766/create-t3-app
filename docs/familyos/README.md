@@ -59,6 +59,16 @@ This directory contains all planning and handoff documentation for FamilyOS, a c
    - Definition of Done per phase
    - Success criteria (final verification)
 
+7. **[DEPLOYMENT.md](./DEPLOYMENT.md)** — Production Deployment Guide
+   - Vercel deployment step-by-step
+   - Database setup (Vercel Postgres & Supabase)
+   - Google OAuth production configuration
+   - Environment variable setup
+   - Database migration instructions
+   - Complete verification checklist
+   - Troubleshooting guide
+   - Security checklist
+
 ---
 
 ## 🚀 Quick Start
@@ -69,9 +79,14 @@ This directory contains all planning and handoff documentation for FamilyOS, a c
 3. Approve or request changes
 
 ### For Implementation:
-1. Read all 6 documents above (in order)
+1. Read all 7 documents above (in order)
 2. Follow **HANDOFF_PROMPT.md** step-by-step
 3. Do NOT skip tickets or stop points
+
+### For Deployment:
+1. Complete implementation following **HANDOFF_PROMPT.md**
+2. Follow **DEPLOYMENT.md** for production deployment
+3. Use verification checklist to ensure deployment contract compliance
 
 ---
 
@@ -191,7 +206,10 @@ If you have questions about this documentation:
 | TOKEN_ECONOMICS.md | 1.0 | 2025-12-14 |
 | SETUP_PACK.md | 1.0 | 2025-12-14 |
 | HANDOFF_PROMPT.md | 1.0 | 2025-12-14 |
+| DEPLOYMENT.md | 1.0 | 2025-12-15 |
 
 ---
 
 **Ready to start?** Read **HANDOFF_PROMPT.md** and follow the build order step-by-step. 🚀
+
+**Ready to deploy?** Follow **DEPLOYMENT.md** for production deployment to Vercel.
