@@ -44,7 +44,7 @@ export function LatestPost() {
         <button
           type="submit"
           className={styles.submitButton}
-          disabled={createPost.isPending}
+          disabled={createPost.isPending || name.length === 0}
         >
           {createPost.isPending ? "Submitting..." : "Submit"}
         </button>
