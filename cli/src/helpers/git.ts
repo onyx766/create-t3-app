@@ -37,9 +37,9 @@ export const isInsideGitRepo = async (dir: string): Promise<boolean> => {
     if (errorMessage.includes("dubious ownership")) {
       logger.warn(
         `Git detected dubious ownership in repository at '${dir}'.\n` +
-        `This occurs on file systems that don't record ownership (FAT32, exFAT, network drives).\n` +
-        `Common on external drives, USB drives, and Windows network shares.\n\n` +
-        `To fix this, run: ${chalk.cyan(`git config --global --add safe.directory "${dir}"`)}\n`
+          `This occurs on file systems that don't record ownership (FAT32, exFAT, network drives).\n` +
+          `Common on external drives, USB drives, and Windows network shares.\n\n` +
+          `To fix this, run: ${chalk.cyan(`git config --global --add safe.directory "${dir}"`)}\n`
       );
     }
     // Else, it will throw a git-error and we return false
@@ -137,24 +137,24 @@ export const initializeGit = async (projectDir: string) => {
     );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    
+
     // Check for dubious ownership error and provide helpful guidance
     if (errorMessage.includes("dubious ownership")) {
       spinner.fail(
         `${chalk.bold.red("Failed:")} Git detected dubious ownership in repository.\n\n` +
-        `${chalk.yellow("Cause:")} The file system doesn't record ownership (FAT32, exFAT, network drive).\n` +
-        `${chalk.dim("This is common on external drives, USB drives, and Windows network shares.")}\n\n` +
-        `${chalk.bold("To fix this, run:")}\n` +
-        `  ${chalk.cyan(`git config --global --add safe.directory "${projectDir}"`)}\n\n` +
-        `${chalk.dim("Or to trust all repositories:")}\n` +
-        `  ${chalk.cyan("git config --global --add safe.directory '*'")}\n`
+          `${chalk.yellow("Cause:")} The file system doesn't record ownership (FAT32, exFAT, network drive).\n` +
+          `${chalk.dim("This is common on external drives, USB drives, and Windows network shares.")}\n\n` +
+          `${chalk.bold("To fix this, run:")}\n` +
+          `  ${chalk.cyan(`git config --global --add safe.directory "${projectDir}"`)}\n\n` +
+          `${chalk.dim("Or to trust all repositories:")}\n` +
+          `  ${chalk.cyan("git config --global --add safe.directory '*'")}\n`
       );
     } else {
       // Show the actual error message instead of generic text
       spinner.fail(
         `${chalk.bold.red("Failed:")} could not initialize git.\n` +
-        `${chalk.yellow("Error:")} ${errorMessage}\n` +
-        `${chalk.dim("Make sure git is updated to the latest version.")}\n`
+          `${chalk.yellow("Error:")} ${errorMessage}\n` +
+          `${chalk.dim("Make sure git is updated to the latest version.")}\n`
       );
     }
   }
