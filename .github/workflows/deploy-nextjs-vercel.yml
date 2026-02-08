@@ -1,0 +1,16 @@
+name: Deploy to Vercel
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Deploy with Vercel CLI
+        uses: vercel/actions/deploy@v21
+        with:
+          token: $
+          project-id: $
