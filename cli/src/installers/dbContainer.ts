@@ -35,4 +35,13 @@ export const dbContainerInstaller: Installer = ({
     scriptText.replaceAll("project1", sanitizedProjectName)
   );
   fs.chmodSync(scriptDest, "755");
+
+  // Copy stop-database.sh script (database-agnostic)
+  const stopScriptSrc = path.join(
+    PKG_ROOT,
+    "template/extras/start-database/stop-database.sh"
+  );
+  const stopScriptDest = path.join(projectDir, "stop-database.sh");
+  fs.copyFileSync(stopScriptSrc, stopScriptDest);
+  fs.chmodSync(stopScriptDest, "755");
 };
