@@ -38,27 +38,31 @@ After your app has been scaffolded, check out the [first steps](/en/usage/first-
 
 ## Advanced usage
 
-| Option/Flag       | Description                                                             |
-| ----------------- | ----------------------------------------------------------------------- |
-| `[dir]`           | Include a directory argument with a name for the project                |
-| `--noGit`         | Explicitly tell the CLI to not initialize a new git repo in the project |
-| `-y`, `--default` | Bypass the CLI and bootstrap a new t3-app with all options selected     |
-| `--noInstall`     | Generate project without installing dependencies                        |
+| Option/Flag              | Description                                                             |
+| ------------------------ | ----------------------------------------------------------------------- |
+| `[dir]`                  | Include a directory argument with a name for the project                |
+| `--noGit`                | Explicitly tell the CLI to not initialize a new git repo in the project |
+| `-y`, `--default`        | Bypass the CLI and bootstrap a new t3-app with all options selected     |
+| `--noInstall`            | Generate project without installing dependencies                        |
+| `-i`, `--import-alias`   | Set a custom import alias (default: `~/`)                               |
 
 ## Experimental usage
 
 For our CI, we have some experimental flags that allow you to scaffold any app without any prompts. If this use case applies to you, you can use these flags. Please note that these flags are experimental and may change in the future without following semver versioning.
 
-| Flag                      | Description                                  |
-| ------------------------- | -------------------------------------------- |
-| `--CI`                    | Let the CLI know you're in CI mode           |
-| `--trpc`                  | Include tRPC in the project                  |
-| `--prisma`                | Include Prisma in the project                |
-| `--drizzle`               | Include Drizzle in the project               |
-| `--nextAuth`              | Include NextAuth.js in the project           |
-| `--tailwind`              | Include Tailwind CSS in the project          |
-| `--dbProvider [provider]` | Include a configured database in the project |
-| `--appRouter`             | Use Next.js App Router in the project        |
+| Flag                      | Description                                          |
+| ------------------------- | ---------------------------------------------------- |
+| `--CI`                    | Let the CLI know you're in CI mode                   |
+| `--tailwind`              | Include Tailwind CSS in the project                  |
+| `--trpc`                  | Include tRPC in the project                          |
+| `--nextAuth`              | Include NextAuth.js in the project                   |
+| `--betterAuth`            | Include BetterAuth in the project                    |
+| `--prisma`                | Include Prisma in the project                        |
+| `--drizzle`               | Include Drizzle in the project                       |
+| `--dbProvider [provider]` | Choose a database provider for the project           |
+| `--appRouter`             | Use Next.js App Router in the project                |
+| `--eslint`                | Include ESLint and Prettier in the project           |
+| `--biome`                 | Include Biome for linting and formatting             |
 
 <Callout type="warning">
   If you don't provide the `CI` flag, the rest of these flags have no effect.
@@ -66,9 +70,23 @@ For our CI, we have some experimental flags that allow you to scaffold any app w
 
 You don't need to explicitly opt-out of the packages you don't want. However, if you prefer to be explicit, you can pass `false`, e.g. `--nextAuth false`.
 
-The --dbProvider command has 4 database values to choose from: mysql, postgres, planetscale, sqlite. If the command is not provided the default value will be sqlite.
+The `--dbProvider` flag accepts one of the following values: `mysql`, `postgres`, `planetscale`, `sqlite`. If not provided, the default is `sqlite`.
 
-### Example
+The following combinations are incompatible and will cause the CLI to exit:
+- `--prisma` + `--drizzle`
+- `--eslint` + `--biome`
+- `--nextAuth` + `--betterAuth`
+
+### Defaults
+
+When using `--CI`, any flag not explicitly provided will default to **not included**. For example, if you don't pass `--tailwind`, Tailwind CSS will not be installed. The only defaults that apply are:
+
+- `--dbProvider` defaults to `sqlite`
+- `--import-alias` defaults to `~/`
+- Git is initialized unless `--noGit` is passed
+- Dependencies are installed unless `--noInstall` is passed
+
+### Examples
 
 The following would scaffold a T3 App with tRPC and Tailwind CSS.
 
@@ -80,4 +98,10 @@ The following would scaffold a T3 App with NextAuth.js, Tailwind CSS, Drizzle, a
 
 ```bash
 pnpm dlx create-t3-app@latest --CI --nextAuth --tailwind --drizzle --dbProvider postgres
+```
+
+The following would scaffold a T3 App with Tailwind CSS, App Router, ESLint/Prettier, and a custom import alias.
+
+```bash
+pnpm dlx create-t3-app@latest --CI --tailwind --appRouter --eslint --import-alias "@/"
 ```
