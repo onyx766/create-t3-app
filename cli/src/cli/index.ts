@@ -200,6 +200,12 @@ export const runCli = async (): Promise<CliResults> => {
 
   cliResults.flags = program.opts();
 
+  // When --import-alias is passed without a value, Commander sets it to true (boolean).
+  // Fall back to the default alias in that case.
+  if (typeof cliResults.flags.importAlias !== "string") {
+    cliResults.flags.importAlias = defaultOptions.flags.importAlias;
+  }
+
   /** @internal Used for CI E2E tests. */
   if (cliResults.flags.CI) {
     cliResults.packages = [];
