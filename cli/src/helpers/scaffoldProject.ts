@@ -89,6 +89,10 @@ export const scaffoldProject = async ({
     path.join(projectDir, "_gitignore"),
     path.join(projectDir, ".gitignore")
   );
+  fs.renameSync(
+    path.join(projectDir, "_prettierignore"),
+    path.join(projectDir, ".prettierignore")
+  );
 
   const scaffoldedName =
     projectName === "." ? "App" : chalk.cyan.bold(projectName);
