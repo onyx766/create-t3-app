@@ -10,38 +10,66 @@ import { type AvailableDependencies } from "./dependencyVersionMap.js";
 
 // Also installs prettier
 export const dynamicEslintInstaller: Installer = ({ projectDir, packages }) => {
-  const devPackages: AvailableDependencies[] = [
-    "prettier",
-    "eslint",
-    "eslint-config-next",
-    "typescript-eslint",
-    "@eslint/eslintrc",
-  ];
-
-  if (packages?.tailwind.inUse) {
-    devPackages.push("prettier-plugin-tailwindcss");
-  }
-  if (packages?.drizzle.inUse) {
-    devPackages.push("eslint-plugin-drizzle");
-  }
-
-  addPackageDependency({
-    projectDir,
-    dependencies: devPackages,
-    devMode: true,
-  });
+  const usingUltracite = !!packages?.ultracite?.inUse;
   const extrasDir = path.join(PKG_ROOT, "template/extras");
 
-  // Prettier
-  let prettierSrc: string;
-  if (packages?.tailwind.inUse) {
-    prettierSrc = path.join(extrasDir, "config/_tailwind.prettier.config.js");
-  } else {
-    prettierSrc = path.join(extrasDir, "config/_prettier.config.js");
-  }
-  const prettierDest = path.join(projectDir, "prettier.config.js");
+  if (usingUltracite) {
+    addPackageDependency({
+      projectDir,
+      dependencies: ["ultracite", "eslint", "prettier"],
+      devMode: true,
+    });
 
-  fs.copySync(prettierSrc, prettierDest);
+    // ESLint config
+    fs.copySync(
+      path.join(extrasDir, "config/_ultracite.eslint.config.js"),
+      path.join(projectDir, "eslint.config.js")
+    );
+
+    // Prettier config
+    fs.copySync(
+      path.join(extrasDir, "config/_ultracite.prettier.config.js"),
+      path.join(projectDir, "prettier.config.js")
+    );
+  } else {
+    const devPackages: AvailableDependencies[] = [
+      "prettier",
+      "eslint",
+      "eslint-config-next",
+      "typescript-eslint",
+      "@eslint/eslintrc",
+    ];
+
+    if (packages?.tailwind.inUse) {
+      devPackages.push("prettier-plugin-tailwindcss");
+    }
+    if (packages?.drizzle.inUse) {
+      devPackages.push("eslint-plugin-drizzle");
+    }
+
+    addPackageDependency({
+      projectDir,
+      dependencies: devPackages,
+      devMode: true,
+    });
+
+    // Prettier
+    let prettierSrc: string;
+    if (packages?.tailwind.inUse) {
+      prettierSrc = path.join(extrasDir, "config/_tailwind.prettier.config.js");
+    } else {
+      prettierSrc = path.join(extrasDir, "config/_prettier.config.js");
+    }
+    fs.copySync(prettierSrc, path.join(projectDir, "prettier.config.js"));
+
+    // eslint
+    const usingDrizzle = !!packages?.drizzle?.inUse;
+    const eslintConfigSrc = path.join(
+      extrasDir,
+      usingDrizzle ? "config/_eslint.drizzle.js" : "config/_eslint.base.js"
+    );
+    fs.copySync(eslintConfigSrc, path.join(projectDir, "eslint.config.js"));
+  }
 
   // pnpm
   const pkgManager = getUserPkgManager();
@@ -60,14 +88,4 @@ export const dynamicEslintInstaller: Installer = ({ projectDir, packages }) => {
       "format:check": 'prettier --check "**/*.{ts,tsx,js,jsx,mdx}" --cache',
     },
   });
-
-  // eslint
-  const usingDrizzle = !!packages?.drizzle?.inUse;
-  const eslintConfigSrc = path.join(
-    extrasDir,
-    usingDrizzle ? "config/_eslint.drizzle.js" : "config/_eslint.base.js"
-  );
-  const eslintConfigDest = path.join(projectDir, "eslint.config.js");
-
-  fs.copySync(eslintConfigSrc, eslintConfigDest);
 };
