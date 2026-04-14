@@ -85,6 +85,28 @@ const main = async () => {
   if (!noInstall) {
     await installDependencies({ projectDir });
 
+    if (usePackages.ultracite.inUse) {
+      const linter = usePackages.eslint.inUse ? "eslint" : "biome";
+      logger.info("Initializing Ultracite...");
+      await execa(
+        "npx",
+        [
+          "ultracite@latest",
+          "init",
+          "--quiet",
+          "--linter",
+          linter,
+          "--frameworks",
+          "next",
+          "react",
+          "--pm",
+          pkgManager,
+        ],
+        { cwd: projectDir }
+      );
+      logger.info("Successfully initialized Ultracite!");
+    }
+
     if (usePackages.prisma.inUse) {
       logger.info("Generating Prisma client...");
       await execa("npx", ["prisma", "generate"], { cwd: projectDir });
@@ -96,6 +118,7 @@ const main = async () => {
       projectDir,
       eslint: packages.includes("eslint"),
       biome: packages.includes("biome"),
+      ultracite: packages.includes("ultracite"),
     });
   }
 

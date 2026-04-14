@@ -6,18 +6,23 @@ import { type Installer } from "~/installers/index.js";
 import { addPackageDependency } from "~/utils/addPackageDependency.js";
 import { addPackageScript } from "~/utils/addPackageScript.js";
 
-export const biomeInstaller: Installer = ({ projectDir }) => {
-  addPackageDependency({
-    projectDir,
-    dependencies: ["@biomejs/biome"],
-    devMode: true,
-  });
+export const biomeInstaller: Installer = ({ projectDir, packages }) => {
+  const usingUltracite = !!packages?.ultracite?.inUse;
 
-  const extrasDir = path.join(PKG_ROOT, "template/extras");
-  const biomeConfigSrc = path.join(extrasDir, "config/biome.jsonc");
-  const biomeConfigDest = path.join(projectDir, "biome.jsonc");
+  // When using ultracite, skip config files and deps — ultracite init handles those post-install
+  if (!usingUltracite) {
+    addPackageDependency({
+      projectDir,
+      dependencies: ["@biomejs/biome"],
+      devMode: true,
+    });
 
-  fs.copySync(biomeConfigSrc, biomeConfigDest);
+    const extrasDir = path.join(PKG_ROOT, "template/extras");
+    const biomeConfigSrc = path.join(extrasDir, "config/biome.jsonc");
+    const biomeConfigDest = path.join(projectDir, "biome.jsonc");
+
+    fs.copySync(biomeConfigSrc, biomeConfigDest);
+  }
 
   addPackageScript({
     projectDir,

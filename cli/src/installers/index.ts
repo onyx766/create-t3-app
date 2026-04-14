@@ -22,6 +22,7 @@ export const availablePackages = [
   "envVariables",
   "eslint",
   "biome",
+  "ultracite",
   "dbContainer",
 ] as const;
 export type AvailablePackages = (typeof availablePackages)[number];
@@ -98,5 +99,11 @@ export const buildPkgInstallerMap = (
   biome: {
     inUse: packages.includes("biome"),
     installer: biomeInstaller,
+  },
+  ultracite: {
+    inUse: packages.includes("ultracite"),
+    installer: () => {
+      /* no-op: ultracite logic is handled inside eslint/biome installers */
+    },
   },
 });

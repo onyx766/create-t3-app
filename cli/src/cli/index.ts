@@ -43,6 +43,8 @@ interface CliFlags {
   eslint: boolean;
   /** @internal Used in CI */
   biome: boolean;
+  /** @internal Used in CI */
+  ultracite: boolean;
 }
 
 interface CliResults {
@@ -71,6 +73,7 @@ const defaultOptions: CliResults = {
     dbProvider: "sqlite",
     eslint: false,
     biome: false,
+    ultracite: false,
   },
   databaseProvider: "sqlite",
 };
@@ -170,6 +173,11 @@ export const runCli = async (): Promise<CliResults> => {
       "Experimental: Boolean value if we should install biome. Must be used in conjunction with `--CI`.",
       (value) => !!value && value !== "false"
     )
+    .option(
+      "--ultracite [boolean]",
+      "Experimental: Boolean value if we should install ultracite presets. Must be used in conjunction with `--CI`.",
+      (value) => !!value && value !== "false"
+    )
     /** END CI-FLAGS */
     .version(getVersion(), "-v, --version", "Display the version number")
     .addHelpText(
@@ -211,6 +219,7 @@ export const runCli = async (): Promise<CliResults> => {
     if (cliResults.flags.betterAuth) cliResults.packages.push("betterAuth");
     if (cliResults.flags.eslint) cliResults.packages.push("eslint");
     if (cliResults.flags.biome) cliResults.packages.push("biome");
+    if (cliResults.flags.ultracite) cliResults.packages.push("ultracite");
     if (cliResults.flags.prisma && cliResults.flags.drizzle) {
       // We test a matrix of all possible combination of packages in CI. Checking for impossible
       // combinations here and exiting gracefully is easier than changing the CI matrix to exclude
@@ -220,6 +229,16 @@ export const runCli = async (): Promise<CliResults> => {
     }
     if (cliResults.flags.biome && cliResults.flags.eslint) {
       logger.warn("Incompatible combination Biome + ESLint. Exiting.");
+      process.exit(0);
+    }
+    if (
+      cliResults.flags.ultracite &&
+      !cliResults.flags.eslint &&
+      !cliResults.flags.biome
+    ) {
+      logger.warn(
+        "Ultracite requires either ESLint or Biome to be enabled. Exiting."
+      );
       process.exit(0);
     }
     if (cliResults.flags.nextAuth && cliResults.flags.betterAuth) {
@@ -348,6 +367,13 @@ export const runCli = async (): Promise<CliResults> => {
             initialValue: "eslint",
           });
         },
+        ultracite: () => {
+          return p.confirm({
+            message:
+              "Would you like to use Ultracite for your linting presets?",
+            initialValue: false,
+          });
+        },
         ...(!cliResults.flags.noGit && {
           git: () => {
             return p.confirm({
@@ -392,6 +418,7 @@ export const runCli = async (): Promise<CliResults> => {
     if (project.database === "drizzle") packages.push("drizzle");
     if (project.linter === "eslint") packages.push("eslint");
     if (project.linter === "biome") packages.push("biome");
+    if (project.ultracite) packages.push("ultracite");
 
     return {
       appName: project.name ?? cliResults.appName,
