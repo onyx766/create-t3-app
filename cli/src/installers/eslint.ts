@@ -13,25 +13,8 @@ export const dynamicEslintInstaller: Installer = ({ projectDir, packages }) => {
   const usingUltracite = !!packages?.ultracite?.inUse;
   const extrasDir = path.join(PKG_ROOT, "template/extras");
 
-  if (usingUltracite) {
-    addPackageDependency({
-      projectDir,
-      dependencies: ["ultracite", "eslint", "prettier"],
-      devMode: true,
-    });
-
-    // ESLint config
-    fs.copySync(
-      path.join(extrasDir, "config/_ultracite.eslint.config.js"),
-      path.join(projectDir, "eslint.config.js")
-    );
-
-    // Prettier config
-    fs.copySync(
-      path.join(extrasDir, "config/_ultracite.prettier.config.js"),
-      path.join(projectDir, "prettier.config.js")
-    );
-  } else {
+  // When using ultracite, skip config files and deps — ultracite init handles those post-install
+  if (!usingUltracite) {
     const devPackages: AvailableDependencies[] = [
       "prettier",
       "eslint",
@@ -69,13 +52,13 @@ export const dynamicEslintInstaller: Installer = ({ projectDir, packages }) => {
       usingDrizzle ? "config/_eslint.drizzle.js" : "config/_eslint.base.js"
     );
     fs.copySync(eslintConfigSrc, path.join(projectDir, "eslint.config.js"));
-  }
 
-  // pnpm
-  const pkgManager = getUserPkgManager();
-  if (pkgManager === "pnpm") {
-    const pnpmSrc = path.join(extrasDir, "pnpm/_npmrc");
-    fs.copySync(pnpmSrc, path.join(projectDir, ".npmrc"));
+    // pnpm
+    const pkgManager = getUserPkgManager();
+    if (pkgManager === "pnpm") {
+      const pnpmSrc = path.join(extrasDir, "pnpm/_npmrc");
+      fs.copySync(pnpmSrc, path.join(projectDir, ".npmrc"));
+    }
   }
 
   addPackageScript({

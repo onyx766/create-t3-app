@@ -38,9 +38,6 @@ export const dependencyVersionMap = {
   superjson: "^2.2.1",
   "server-only": "^0.0.1",
 
-  // ultracite
-  ultracite: "^7.5.7",
-
   // biome
   "@biomejs/biome": "^2.2.5",
 

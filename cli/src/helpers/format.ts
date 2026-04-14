@@ -11,13 +11,17 @@ export const formatProject = async ({
   projectDir,
   eslint,
   biome,
+  ultracite,
 }: {
   pkgManager: PackageManager;
   projectDir: string;
   eslint: boolean;
   biome: boolean;
+  ultracite: boolean;
 }) => {
-  logger.info(`Formatting project with ${eslint ? "prettier" : "biome"}...`);
+  logger.info(
+    `Formatting project with ${eslint || (ultracite && !biome) ? "prettier" : "biome"}...`
+  );
   const spinner = ora("Running format command\n").start();
 
   if (eslint) {
@@ -25,9 +29,17 @@ export const formatProject = async ({
       cwd: projectDir,
     });
   } else if (biome) {
-    await execa(pkgManager, ["run", "check:unsafe"], {
-      cwd: projectDir,
-    });
+    if (ultracite) {
+      // Ultracite's biome rules are stricter than the default t3 template code,
+      // so only run formatting (not linting) to avoid failing on lint errors.
+      await execa(pkgManager, ["exec", "biome", "format", "--write", "."], {
+        cwd: projectDir,
+      });
+    } else {
+      await execa(pkgManager, ["run", "check:unsafe"], {
+        cwd: projectDir,
+      });
+    }
   }
   spinner.succeed(`${chalk.green("Successfully formatted project")}`);
 };
