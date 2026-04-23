@@ -17,7 +17,7 @@ export const betterAuthInstaller: Installer = ({
 
   const deps: AvailableDependencies[] = ["better-auth"];
   if (usingPrisma) deps.push("@auth/prisma-adapter");
-  if (usingDrizzle) deps.push("@auth/drizzle-adapter");
+  if (usingDrizzle) deps.push("@better-auth/drizzle-adapter");
 
   addPackageDependency({
     projectDir,
