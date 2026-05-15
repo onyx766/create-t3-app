@@ -280,10 +280,12 @@ export const runCli = async (): Promise<CliResults> => {
             initialValue: "typescript",
           });
         },
-        _: ({ results }) =>
-          results.language === "javascript"
-            ? p.note(chalk.redBright("Wrong answer, using TypeScript instead"))
-            : undefined,
+        _: ({ results }) => {
+          if (results.language === "javascript") {
+            p.note(chalk.redBright("Wrong answer, using TypeScript instead"));
+          }
+          return undefined;
+        },
         styling: () => {
           return p.confirm({
             message: "Will you be using Tailwind CSS for styling?",
