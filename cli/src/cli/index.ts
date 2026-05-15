@@ -284,6 +284,7 @@ export const runCli = async (): Promise<CliResults> => {
           if (results.language === "javascript") {
             p.note(chalk.redBright("Wrong answer, using TypeScript instead"));
           }
+          return;
         },
         styling: () => {
           return p.confirm({
