@@ -280,7 +280,7 @@ export const runCli = async (): Promise<CliResults> => {
             initialValue: "typescript",
           });
         },
-        _: ({ results }) =>
+        _: async ({ results }) =>
           results.language === "javascript"
             ? p.note(chalk.redBright("Wrong answer, using TypeScript instead"))
             : undefined,
