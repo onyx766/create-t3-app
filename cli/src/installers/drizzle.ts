@@ -43,11 +43,15 @@ export const drizzleInstaller: Installer = ({
   );
   const configDest = path.join(projectDir, "drizzle.config.ts");
 
+  // The clerk schema ships the user-runs table for the Trelent runs
+  // experience; without trelent the example post router needs the base schema.
   const schemaBaseName = packages?.betterAuth.inUse
     ? "with-better-auth"
     : packages?.nextAuth.inUse
       ? "with-auth"
-      : "base";
+      : packages?.clerk.inUse && packages?.trelent.inUse
+        ? "with-clerk"
+        : "base";
   const schemaSrc = path.join(
     extrasDir,
     "src/server/db/schema-drizzle",

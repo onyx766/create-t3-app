@@ -24,6 +24,7 @@ interface CreateProjectOptions {
   importAlias: string;
   appRouter: boolean;
   databaseProvider: DatabaseProvider;
+  sandboxName: string;
 }
 
 export const createProject = async ({
@@ -33,9 +34,12 @@ export const createProject = async ({
   noInstall,
   appRouter,
   databaseProvider,
+  sandboxName,
 }: CreateProjectOptions) => {
   const pkgManager = getUserPkgManager();
   const projectDir = path.resolve(process.cwd(), projectName);
+  // The Next.js app lives in <project>/web; sandboxes/ sits next to it
+  const webDir = path.join(projectDir, "web");
 
   // Bootstraps the base Next.js application
   await scaffoldProject({
@@ -52,12 +56,13 @@ export const createProject = async ({
   installPackages({
     projectName,
     scopedAppName,
-    projectDir,
+    projectDir: webDir,
     pkgManager,
     packages,
     noInstall,
     appRouter,
     databaseProvider,
+    sandboxName,
   });
 
   // Select necessary _app,index / layout,page files
@@ -65,14 +70,14 @@ export const createProject = async ({
     // Replace next.config
     fs.copyFileSync(
       path.join(PKG_ROOT, "template/extras/config/next-config-appdir.js"),
-      path.join(projectDir, "next.config.js")
+      path.join(webDir, "next.config.js")
     );
 
-    selectLayoutFile({ projectDir, packages });
-    selectPageFile({ projectDir, packages });
+    selectLayoutFile({ projectDir: webDir, packages });
+    selectPageFile({ projectDir: webDir, packages });
   } else {
-    selectAppFile({ projectDir, packages });
-    selectIndexFile({ projectDir, packages });
+    selectAppFile({ projectDir: webDir, packages });
+    selectIndexFile({ projectDir: webDir, packages });
   }
 
   // If no tailwind, select use css modules
@@ -82,7 +87,7 @@ export const createProject = async ({
       "template/extras/src/index.module.css"
     );
     const indexModuleCssDest = path.join(
-      projectDir,
+      webDir,
       "src",
       appRouter ? "app" : "pages",
       "index.module.css"

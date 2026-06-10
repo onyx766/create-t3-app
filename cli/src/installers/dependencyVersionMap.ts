@@ -11,13 +11,36 @@ export const dependencyVersionMap = {
   // Better-Auth
   "better-auth": "^1.3",
 
+  // Clerk
+  "@clerk/nextjs": "^7.5.1",
+
+  // Trelent Agent Orchestrator
+  "@trelent/agents": "^0.2.9",
+
+  // shadcn/ui
+  "radix-ui": "^1.5.0",
+  "class-variance-authority": "^0.7.1",
+  clsx: "^2.1.1",
+  "tailwind-merge": "^3.6.0",
+  "lucide-react": "^1.17.0",
+  cmdk: "^1.1.1",
+  "tw-animate-css": "^1.4.0",
+
+  // AI Elements
+  ai: "^6.0.0",
+  streamdown: "^2.5.0",
+  "use-stick-to-bottom": "^1.1.6",
+  nanoid: "^5.1.11",
+
   // Prisma
   prisma: "^6.6.0",
   "@prisma/client": "^6.6.0",
   "@prisma/adapter-planetscale": "^6.6.0",
 
   // Drizzle
-  "drizzle-kit": "^0.30.5",
+  // ^0.31.10 - older versions mis-introspect Postgres 18's named NOT NULL
+  // constraints and generate destructive diffs on every `db:push`.
+  "drizzle-kit": "^0.31.10",
   "drizzle-orm": "^0.41.0",
   mysql2: "^3.11.0",
   "@planetscale/database": "^1.19.0",

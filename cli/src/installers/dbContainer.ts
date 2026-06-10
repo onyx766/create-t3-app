@@ -24,8 +24,11 @@ export const dbContainerInstaller: Installer = ({
   const scriptText = fs.readFileSync(scriptSrc, "utf-8");
   const scriptDest = path.join(projectDir, "start-database.sh");
   // for configuration with postgresql and mysql when project is created with '.' project name
+  // (projectDir is <project>/web, so the project name comes from the parent dir)
   const [projectNameParsed] =
-    projectName === "." ? parseNameAndPath(projectDir) : [projectName];
+    projectName === "."
+      ? parseNameAndPath(path.dirname(projectDir))
+      : [projectName];
 
   // Sanitize the project name for Docker container usage
   const sanitizedProjectName = sanitizeName(projectNameParsed);

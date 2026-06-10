@@ -41,6 +41,7 @@ const main = async () => {
     packages,
     flags: { noGit, noInstall, importAlias, appRouter },
     databaseProvider,
+    sandboxName,
   } = await runCli();
 
   const usePackages = buildPkgInstallerMap(packages, databaseProvider);
@@ -56,11 +57,15 @@ const main = async () => {
     importAlias,
     noInstall,
     appRouter,
+    sandboxName,
   });
+
+  // The Next.js app lives in <project>/web
+  const webDir = path.join(projectDir, "web");
 
   // Write name to package.json
   const pkgJson = fs.readJSONSync(
-    path.join(projectDir, "package.json")
+    path.join(webDir, "package.json")
   ) as CT3APackageJSON;
   pkgJson.name = scopedAppName;
   pkgJson.ct3aMetadata = { initVersion: getVersion() };
@@ -68,32 +73,32 @@ const main = async () => {
   // ? Bun doesn't support this field (yet)
   if (pkgManager !== "bun") {
     const { stdout } = await execa(pkgManager, ["-v"], {
-      cwd: projectDir,
+      cwd: webDir,
     });
     pkgJson.packageManager = `${pkgManager}@${stdout.trim()}`;
   }
 
-  fs.writeJSONSync(path.join(projectDir, "package.json"), pkgJson, {
+  fs.writeJSONSync(path.join(webDir, "package.json"), pkgJson, {
     spaces: 2,
   });
 
   // update import alias in any generated files if not using the default
   if (importAlias !== "~/") {
-    setImportAlias(projectDir, importAlias);
+    setImportAlias(webDir, importAlias);
   }
 
   if (!noInstall) {
-    await installDependencies({ projectDir });
+    await installDependencies({ projectDir: webDir });
 
     if (usePackages.prisma.inUse) {
       logger.info("Generating Prisma client...");
-      await execa("npx", ["prisma", "generate"], { cwd: projectDir });
+      await execa("npx", ["prisma", "generate"], { cwd: webDir });
       logger.info("Successfully generated Prisma client!");
     }
 
     await formatProject({
       pkgManager,
-      projectDir,
+      projectDir: webDir,
       eslint: packages.includes("eslint"),
       biome: packages.includes("biome"),
     });
@@ -110,6 +115,7 @@ const main = async () => {
     noInstall,
     projectDir,
     databaseProvider,
+    sandboxName,
   });
 
   process.exit(0);

@@ -36,6 +36,16 @@ interface CliFlags {
   /** @internal Used in CI. */
   betterAuth: boolean;
   /** @internal Used in CI. */
+  clerk: boolean;
+  /** @internal Used in CI. */
+  shadcn: boolean;
+  /** @internal Used in CI. */
+  aiElements: boolean;
+  /** @internal Used in CI. */
+  trelent: boolean;
+  /** @internal Used in CI. */
+  sandboxName: string;
+  /** @internal Used in CI. */
   appRouter: boolean;
   /** @internal Used in CI. */
   dbProvider: DatabaseProvider;
@@ -50,11 +60,21 @@ interface CliResults {
   packages: AvailablePackages[];
   flags: CliFlags;
   databaseProvider: DatabaseProvider;
+  sandboxName: string;
 }
 
 const defaultOptions: CliResults = {
   appName: DEFAULT_APP_NAME,
-  packages: ["nextAuth", "prisma", "tailwind", "trpc", "eslint"],
+  packages: [
+    "clerk",
+    "drizzle",
+    "tailwind",
+    "shadcn",
+    "aiElements",
+    "trpc",
+    "trelent",
+    "eslint",
+  ],
   flags: {
     noGit: false,
     noInstall: false,
@@ -66,13 +86,19 @@ const defaultOptions: CliResults = {
     drizzle: false,
     nextAuth: false,
     betterAuth: false,
+    clerk: false,
+    shadcn: false,
+    aiElements: false,
+    trelent: false,
+    sandboxName: "my-sandbox",
     importAlias: "~/",
-    appRouter: false,
+    appRouter: true,
     dbProvider: "sqlite",
     eslint: false,
     biome: false,
   },
   databaseProvider: "sqlite",
+  sandboxName: "my-sandbox",
 };
 
 export const runCli = async (): Promise<CliResults> => {
@@ -123,6 +149,35 @@ export const runCli = async (): Promise<CliResults> => {
       "--betterAuth [boolean]",
       "Experimental: Boolean value if we should install BetterAuth. Must be used in conjunction with `--CI`.",
       (value) => !!value && value !== "false"
+    )
+    /** @experimental Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
+    .option(
+      "--clerk [boolean]",
+      "Experimental: Boolean value if we should install Clerk. Must be used in conjunction with `--CI`.",
+      (value) => !!value && value !== "false"
+    )
+    /** @experimental Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
+    .option(
+      "--shadcn [boolean]",
+      "Experimental: Boolean value if we should set up shadcn/ui. Must be used in conjunction with `--CI`.",
+      (value) => !!value && value !== "false"
+    )
+    /** @experimental Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
+    .option(
+      "--aiElements [boolean]",
+      "Experimental: Boolean value if we should vendor AI Elements components. Must be used in conjunction with `--CI`.",
+      (value) => !!value && value !== "false"
+    )
+    /** @experimental Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
+    .option(
+      "--trelent [boolean]",
+      "Experimental: Boolean value if we should set up a Trelent agent sandbox. Must be used in conjunction with `--CI`.",
+      (value) => !!value && value !== "false"
+    )
+    .option(
+      "--sandboxName [name]",
+      "The name of the Trelent sandbox to scaffold (used with --trelent)",
+      defaultOptions.flags.sandboxName
     )
     /** @experimental - Used for CI E2E tests. Used in conjunction with `--CI` to skip prompting. */
     .option(
@@ -205,10 +260,14 @@ export const runCli = async (): Promise<CliResults> => {
     cliResults.packages = [];
     if (cliResults.flags.trpc) cliResults.packages.push("trpc");
     if (cliResults.flags.tailwind) cliResults.packages.push("tailwind");
+    if (cliResults.flags.shadcn) cliResults.packages.push("shadcn");
+    if (cliResults.flags.aiElements) cliResults.packages.push("aiElements");
     if (cliResults.flags.prisma) cliResults.packages.push("prisma");
     if (cliResults.flags.drizzle) cliResults.packages.push("drizzle");
     if (cliResults.flags.nextAuth) cliResults.packages.push("nextAuth");
     if (cliResults.flags.betterAuth) cliResults.packages.push("betterAuth");
+    if (cliResults.flags.clerk) cliResults.packages.push("clerk");
+    if (cliResults.flags.trelent) cliResults.packages.push("trelent");
     if (cliResults.flags.eslint) cliResults.packages.push("eslint");
     if (cliResults.flags.biome) cliResults.packages.push("biome");
     if (cliResults.flags.prisma && cliResults.flags.drizzle) {
@@ -226,6 +285,27 @@ export const runCli = async (): Promise<CliResults> => {
       logger.warn("Incompatible combination NextAuth + BetterAuth. Exiting.");
       process.exit(0);
     }
+    if (
+      cliResults.flags.clerk &&
+      (cliResults.flags.nextAuth || cliResults.flags.betterAuth)
+    ) {
+      logger.warn(
+        "Incompatible combination Clerk + NextAuth/BetterAuth. Exiting."
+      );
+      process.exit(0);
+    }
+    if (cliResults.flags.shadcn && !cliResults.flags.tailwind) {
+      logger.warn("shadcn/ui requires Tailwind CSS. Exiting.");
+      process.exit(0);
+    }
+    if (cliResults.flags.aiElements && !cliResults.flags.shadcn) {
+      logger.warn("AI Elements requires shadcn/ui. Exiting.");
+      process.exit(0);
+    }
+    if (cliResults.flags.clerk && !cliResults.flags.appRouter) {
+      logger.warn("Clerk support requires the App Router. Enabling it.");
+      cliResults.flags.appRouter = true;
+    }
     if (databaseProviders.includes(cliResults.flags.dbProvider) === false) {
       logger.warn(
         `Incompatible database provided. Use: ${databaseProviders.join(", ")}. Exiting.`
@@ -238,6 +318,9 @@ export const runCli = async (): Promise<CliResults> => {
       cliResults.packages.includes("prisma")
         ? cliResults.flags.dbProvider
         : "sqlite";
+
+    cliResults.sandboxName =
+      cliResults.flags.sandboxName || defaultOptions.sandboxName;
 
     return cliResults;
   }
@@ -301,10 +384,9 @@ export const runCli = async (): Promise<CliResults> => {
               { value: "none", label: "None" },
               { value: "next-auth", label: "NextAuth.js" },
               { value: "better-auth", label: "BetterAuth" },
-              // Maybe later
-              // { value: "clerk", label: "Clerk" },
+              { value: "clerk", label: "Clerk" },
             ],
-            initialValue: "none",
+            initialValue: "clerk",
           });
         },
         database: () => {
@@ -315,10 +397,43 @@ export const runCli = async (): Promise<CliResults> => {
               { value: "prisma", label: "Prisma" },
               { value: "drizzle", label: "Drizzle" },
             ],
-            initialValue: "none",
+            initialValue: "drizzle",
           });
         },
-        appRouter: () => {
+        shadcn: ({ results }) => {
+          if (!results.styling) return;
+          return p.confirm({
+            message:
+              "Would you like to set up shadcn/ui (with AI Elements chat components)?",
+            initialValue: true,
+          });
+        },
+        trelent: () => {
+          return p.confirm({
+            message:
+              "Would you like to set up a Trelent agent sandbox (@trelent/agents)?",
+            initialValue: true,
+          });
+        },
+        sandboxName: ({ results }) => {
+          if (!results.trelent) return;
+          return p.text({
+            message: "What should your sandbox be called?",
+            defaultValue: defaultOptions.sandboxName,
+            placeholder: defaultOptions.sandboxName,
+            validate: (input) => {
+              if (input && !/^[a-z0-9][a-z0-9._-]*$/.test(input)) {
+                return "Sandbox names must be lowercase letters, numbers, '.', '_' or '-' (Docker image naming rules)";
+              }
+              return undefined;
+            },
+          });
+        },
+        appRouter: ({ results }) => {
+          if (results.authentication === "clerk") {
+            p.note("Clerk support uses the Next.js App Router.");
+            return;
+          }
           return p.confirm({
             message: "Would you like to use Next.js App Router?",
             initialValue: true,
@@ -385,22 +500,35 @@ export const runCli = async (): Promise<CliResults> => {
 
     const packages: AvailablePackages[] = [];
     if (project.styling) packages.push("tailwind");
+    if (project.shadcn) packages.push("shadcn", "aiElements");
     if (project.trpc) packages.push("trpc");
     if (project.authentication === "next-auth") packages.push("nextAuth");
     if (project.authentication === "better-auth") packages.push("betterAuth");
+    if (project.authentication === "clerk") packages.push("clerk");
     if (project.database === "prisma") packages.push("prisma");
     if (project.database === "drizzle") packages.push("drizzle");
+    if (project.trelent) packages.push("trelent");
     if (project.linter === "eslint") packages.push("eslint");
     if (project.linter === "biome") packages.push("biome");
+
+    // Clerk integration is app-router only
+    const appRouter =
+      project.authentication === "clerk"
+        ? true
+        : (project.appRouter ?? cliResults.flags.appRouter);
 
     return {
       appName: project.name ?? cliResults.appName,
       packages,
       databaseProvider:
         (project.databaseProvider as DatabaseProvider) || "sqlite",
+      sandboxName:
+        typeof project.sandboxName === "string"
+          ? project.sandboxName
+          : defaultOptions.sandboxName,
       flags: {
         ...cliResults.flags,
-        appRouter: project.appRouter ?? cliResults.flags.appRouter,
+        appRouter: appRouter === true,
         noGit: !project.git || cliResults.flags.noGit,
         noInstall: !project.install || cliResults.flags.noInstall,
         importAlias: project.importAlias ?? cliResults.flags.importAlias,

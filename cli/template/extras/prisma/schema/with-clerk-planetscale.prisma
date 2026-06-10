@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../generated/prisma"
+
+    previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+
+    // If you have enabled foreign key constraints for your database, remove this line.
+    relationMode = "prisma"
+}
+
+/// Agent runs executed through the Trelent orchestrator. Each row belongs to a
+/// Clerk user (`userId`); a forked run points at its parent via `parentId`, so
+/// a run's ancestry chain forms the conversation thread.
+model Run {
+    id           String    @id @default(uuid())
+    userId       String
+    parentId     String?
+    parent       Run?      @relation("RunForks", fields: [parentId], references: [id])
+    forks        Run[]     @relation("RunForks")
+    trelentRunId String?
+    sandbox      String
+    harness      String
+    model        String?
+    prompt       String
+    response     String?
+    status       String    @default("pending")
+    error        String?
+    createdAt    DateTime  @default(now())
+    completedAt  DateTime?
+
+    @@index([userId])
+    @@index([parentId])
+}

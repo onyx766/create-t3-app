@@ -13,6 +13,7 @@ export const envVariablesInstaller: Installer = ({
 }) => {
   const usingNextAuth = packages?.nextAuth.inUse;
   const usingBetterAuth = packages?.betterAuth.inUse;
+  const usingClerk = packages?.clerk.inUse;
   const usingPrisma = packages?.prisma.inUse;
   const usingDrizzle = packages?.drizzle.inUse;
 
@@ -22,6 +23,7 @@ export const envVariablesInstaller: Installer = ({
   const envContent = getEnvContent(
     !!usingNextAuth,
     !!usingBetterAuth,
+    !!usingClerk,
     !!usingPrisma,
     !!usingDrizzle,
     databaseProvider,
@@ -33,15 +35,18 @@ export const envVariablesInstaller: Installer = ({
     if (usingPlanetScale) {
       if (usingBetterAuth) envFile = "with-better-auth-db-planetscale.js";
       else if (usingNextAuth) envFile = "with-auth-db-planetscale.js";
+      else if (usingClerk) envFile = "with-clerk-db.js";
       else envFile = "with-db-planetscale.js";
     } else {
       if (usingBetterAuth) envFile = "with-better-auth-db.js";
       else if (usingNextAuth) envFile = "with-auth-db.js";
+      else if (usingClerk) envFile = "with-clerk-db.js";
       else envFile = "with-db.js";
     }
   } else {
     if (usingBetterAuth) envFile = "with-better-auth.js";
     else if (usingNextAuth) envFile = "with-auth.js";
+    else if (usingClerk) envFile = "with-clerk.js";
   }
 
   if (envFile !== "") {
@@ -80,6 +85,7 @@ export const envVariablesInstaller: Installer = ({
 const getEnvContent = (
   usingNextAuth: boolean,
   usingBetterAuth: boolean,
+  usingClerk: boolean,
   usingPrisma: boolean,
   usingDrizzle: boolean,
   databaseProvider: DatabaseProvider,
@@ -116,6 +122,16 @@ BETTER_AUTH_GITHUB_CLIENT_ID=""
 BETTER_AUTH_GITHUB_CLIENT_SECRET=""
 `;
 
+  if (usingClerk)
+    content += `
+# Clerk
+# In development you can leave these empty - Clerk runs in keyless mode and
+# provisions development keys for you on first run.
+# https://clerk.com/docs/upgrade-guides/keyless
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=""
+CLERK_SECRET_KEY=""
+`;
+
   if (usingPrisma)
     content += `
 # Prisma
@@ -144,7 +160,13 @@ DATABASE_URL='mysql://YOUR_MYSQL_URL_HERE?sslaccept=strict'`;
     content += "\n";
   }
 
-  if (!usingNextAuth && !usingBetterAuth && !usingPrisma && !usingDrizzle)
+  if (
+    !usingNextAuth &&
+    !usingBetterAuth &&
+    !usingClerk &&
+    !usingPrisma &&
+    !usingDrizzle
+  )
     content += `
 # Example:
 # SERVERVAR="foo"

@@ -11,6 +11,7 @@ export const logNextSteps = async ({
   noInstall,
   projectDir,
   databaseProvider,
+  sandboxName,
 }: Pick<
   InstallerOptions,
   | "projectName"
@@ -19,13 +20,12 @@ export const logNextSteps = async ({
   | "projectDir"
   | "appRouter"
   | "databaseProvider"
+  | "sandboxName"
 >) => {
   const pkgManager = getUserPkgManager();
 
   logger.info("Next steps:");
-  if (projectName !== ".") {
-    logger.info(`  cd ${projectName}`);
-  }
+  logger.info(`  cd ${projectName === "." ? "web" : `${projectName}/web`}`);
   if (noInstall) {
     // To reflect yarn's default behavior of installing packages when no additional args provided
     if (pkgManager === "yarn") {
@@ -53,10 +53,26 @@ export const logNextSteps = async ({
     );
   }
 
+  if (packages?.trelent.inUse) {
+    const sandbox = sandboxName ?? "my-sandbox";
+    logger.info(
+      `  Build your sandbox image: docker build -t ${sandbox}:latest ../sandboxes/${sandbox}`
+    );
+    logger.info(
+      "  Point TRELENT_API_URL (and client credentials, if any) at your orchestrator in .env"
+    );
+  }
+
   if (["npm", "bun"].includes(pkgManager)) {
     logger.info(`  ${pkgManager} run dev`);
   } else {
     logger.info(`  ${pkgManager} dev`);
+  }
+
+  if (packages?.clerk.inUse) {
+    logger.info(
+      "  Clerk starts in keyless mode - claim the generated keys from the link printed by `dev`"
+    );
   }
 
   if (!(await isInsideGitRepo(projectDir)) && !isRootGitRepo(projectDir)) {

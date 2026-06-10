@@ -24,9 +24,13 @@ export const trpcInstaller: Installer = ({
 
   const usingAuth = packages?.nextAuth.inUse;
   const usingBetterAuth = packages?.betterAuth.inUse;
+  const usingClerk = packages?.clerk.inUse;
   const usingPrisma = packages?.prisma.inUse;
   const usingDrizzle = packages?.drizzle.inUse;
   const usingDb = usingPrisma === true || usingDrizzle === true;
+  // The full agent-runs experience: Clerk-scoped runs stored in the db and
+  // executed through the Trelent orchestrator.
+  const usingRuns = usingClerk && usingDb && packages?.trelent.inUse;
 
   const extrasDir = path.join(PKG_ROOT, "template/extras");
 
@@ -40,6 +44,8 @@ export const trpcInstaller: Installer = ({
   const trpcFile = (() => {
     if (usingBetterAuth && usingDb) return "with-better-auth-db.ts";
     if (usingBetterAuth) return "with-better-auth.ts";
+    if (usingClerk && usingDb) return "with-clerk-db.ts";
+    if (usingClerk) return "with-clerk.ts";
     if (usingAuth && usingDb) return "with-auth-db.ts";
     if (usingAuth) return "with-auth.ts";
     if (usingDb) return "with-db.ts";
@@ -53,7 +59,11 @@ export const trpcInstaller: Installer = ({
   );
   const trpcDest = path.join(projectDir, "src/server/api/trpc.ts");
 
-  const rootRouterSrc = path.join(extrasDir, "src/server/api/root.ts");
+  const rootRouterSrc = path.join(
+    extrasDir,
+    "src/server/api",
+    usingRuns ? "root-with-run.ts" : "root.ts"
+  );
   const rootRouterDest = path.join(projectDir, "src/server/api/root.ts");
 
   const exampleRouterFile =
@@ -69,15 +79,16 @@ export const trpcInstaller: Installer = ({
               ? "with-drizzle.ts"
               : "base.ts";
 
-  const exampleRouterSrc = path.join(
-    extrasDir,
-    "src/server/api/routers/post",
-    exampleRouterFile
-  );
-  const exampleRouterDest = path.join(
-    projectDir,
-    "src/server/api/routers/post.ts"
-  );
+  const exampleRouterSrc = usingRuns
+    ? path.join(
+        extrasDir,
+        "src/server/api/routers/run",
+        usingPrisma ? "with-clerk-prisma.ts" : "with-clerk-drizzle.ts"
+      )
+    : path.join(extrasDir, "src/server/api/routers/post", exampleRouterFile);
+  const exampleRouterDest = usingRuns
+    ? path.join(projectDir, "src/server/api/routers/run.ts")
+    : path.join(projectDir, "src/server/api/routers/post.ts");
 
   const copySrcDest: [string, string][] = [
     [apiHandlerSrc, apiHandlerDest],
@@ -104,18 +115,23 @@ export const trpcInstaller: Installer = ({
         path.join(projectDir, "src/trpc/react.tsx"),
       ],
       [
+        path.join(extrasDir, "src/trpc/query-client.ts"),
+        path.join(projectDir, "src/trpc/query-client.ts"),
+      ]
+    );
+
+    // The runs experience ships its own components (copied with the page
+    // boilerplate); everything else gets the example post component.
+    if (!usingRuns) {
+      copySrcDest.push([
         path.join(
           extrasDir,
           "src/app/_components",
           packages?.tailwind.inUse ? "post-tw.tsx" : "post.tsx"
         ),
         path.join(projectDir, "src/app/_components/post.tsx"),
-      ],
-      [
-        path.join(extrasDir, "src/trpc/query-client.ts"),
-        path.join(projectDir, "src/trpc/query-client.ts"),
-      ]
-    );
+      ]);
+    }
   } else {
     addPackageDependency({
       dependencies: ["@trpc/next"],

@@ -84,10 +84,34 @@ export const scaffoldProject = async ({
 
   spinner.start();
 
-  fs.copySync(srcDir, projectDir);
+  // The Next.js app is scaffolded into <project>/web; sandbox definitions
+  // (added by the trelent installer) live in <project>/sandboxes.
+  const webDir = path.join(projectDir, "web");
+  fs.copySync(srcDir, webDir);
   fs.renameSync(
-    path.join(projectDir, "_gitignore"),
-    path.join(projectDir, ".gitignore")
+    path.join(webDir, "_gitignore"),
+    path.join(webDir, ".gitignore")
+  );
+
+  const displayName = projectName === "." ? "your app" : projectName;
+  fs.writeFileSync(
+    path.join(projectDir, "README.md"),
+    `# ${displayName}
+
+Scaffolded with [create-agent-app](https://github.com/trelent/create-agent-app).
+
+## Layout
+
+- \`web/\` - the Next.js application ([T3 Stack](https://create.t3.gg/))
+- \`sandboxes/\` - Docker images your agents run in, orchestrated by
+  [@trelent/agents](https://www.npmjs.com/package/@trelent/agents)
+
+## Getting started
+
+See \`web/README.md\` for the application, and the README inside each sandbox
+directory for how to build and publish its image.
+`,
+    "utf-8"
   );
 
   const scaffoldedName =

@@ -4,21 +4,29 @@ import { prismaInstaller } from "~/installers/prisma.js";
 import { tailwindInstaller } from "~/installers/tailwind.js";
 import { trpcInstaller } from "~/installers/trpc.js";
 import { type PackageManager } from "~/utils/getUserPkgManager.js";
+import { aiElementsInstaller } from "./aiElements.js";
 import { betterAuthInstaller } from "./betterAuth.js";
 import { biomeInstaller } from "./biome.js";
+import { clerkInstaller } from "./clerk.js";
 import { dbContainerInstaller } from "./dbContainer.js";
 import { drizzleInstaller } from "./drizzle.js";
 import { dynamicEslintInstaller } from "./eslint.js";
+import { shadcnInstaller } from "./shadcn.js";
+import { trelentInstaller } from "./trelent.js";
 
 // Turning this into a const allows the list to be iterated over for programmatically creating prompt options
 // Should increase extensibility in the future
 export const availablePackages = [
   "nextAuth",
   "betterAuth",
+  "clerk",
   "prisma",
   "drizzle",
   "tailwind",
+  "shadcn",
+  "aiElements",
   "trpc",
+  "trelent",
   "envVariables",
   "eslint",
   "biome",
@@ -43,6 +51,7 @@ export interface InstallerOptions {
   projectName: string;
   scopedAppName: string;
   databaseProvider: DatabaseProvider;
+  sandboxName?: string;
 }
 
 export type Installer = (opts: InstallerOptions) => void;
@@ -67,6 +76,10 @@ export const buildPkgInstallerMap = (
     inUse: packages.includes("betterAuth"),
     installer: betterAuthInstaller,
   },
+  clerk: {
+    inUse: packages.includes("clerk"),
+    installer: clerkInstaller,
+  },
   prisma: {
     inUse: packages.includes("prisma"),
     installer: prismaInstaller,
@@ -79,6 +92,14 @@ export const buildPkgInstallerMap = (
     inUse: packages.includes("tailwind"),
     installer: tailwindInstaller,
   },
+  shadcn: {
+    inUse: packages.includes("shadcn"),
+    installer: shadcnInstaller,
+  },
+  aiElements: {
+    inUse: packages.includes("aiElements"),
+    installer: aiElementsInstaller,
+  },
   trpc: {
     inUse: packages.includes("trpc"),
     installer: trpcInstaller,
@@ -90,6 +111,12 @@ export const buildPkgInstallerMap = (
   envVariables: {
     inUse: true,
     installer: envVariablesInstaller,
+  },
+  // Must run after envVariables: it appends the TRELENT_* vars to the
+  // generated src/env.js and .env files.
+  trelent: {
+    inUse: packages.includes("trelent"),
+    installer: trelentInstaller,
   },
   eslint: {
     inUse: packages.includes("eslint"),

@@ -69,5 +69,20 @@ export const dynamicEslintInstaller: Installer = ({ projectDir, packages }) => {
   );
   const eslintConfigDest = path.join(projectDir, "eslint.config.js");
 
-  fs.copySync(eslintConfigSrc, eslintConfigDest);
+  let eslintConfig = fs.readFileSync(eslintConfigSrc, "utf-8");
+
+  // Vendored third-party components (shadcn/ui, AI Elements) aren't written
+  // against the strict type-checked ruleset - skip linting them, like .next
+  const vendoredIgnores: string[] = [];
+  if (packages?.shadcn.inUse) vendoredIgnores.push("src/components/ui");
+  if (packages?.aiElements.inUse)
+    vendoredIgnores.push("src/components/ai-elements");
+  if (vendoredIgnores.length > 0) {
+    eslintConfig = eslintConfig.replace(
+      "ignores: ['.next']",
+      `ignores: ['.next', ${vendoredIgnores.map((i) => `'${i}'`).join(", ")}]`
+    );
+  }
+
+  fs.writeFileSync(eslintConfigDest, eslintConfig);
 };

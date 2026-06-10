@@ -54,8 +54,13 @@ export const selectLayoutFile = ({
 
   const usingTw = packages.tailwind.inUse;
   const usingTRPC = packages.trpc.inUse;
+  const usingClerk = packages.clerk.inUse;
   let layoutFile = "base.tsx";
-  if (usingTRPC && usingTw) {
+  if (usingClerk && usingTRPC) {
+    layoutFile = "with-clerk-trpc.tsx";
+  } else if (usingClerk) {
+    layoutFile = "with-clerk.tsx";
+  } else if (usingTRPC && usingTw) {
     layoutFile = "with-trpc-tw.tsx";
   } else if (usingTRPC && !usingTw) {
     layoutFile = "with-trpc.tsx";
@@ -113,14 +118,55 @@ export const selectPageFile = ({
   packages,
 }: SelectBoilerplateProps) => {
   const indexFileDir = path.join(PKG_ROOT, "template/extras/src/app/page");
+  const extrasDir = path.join(PKG_ROOT, "template/extras");
 
   const usingTRPC = packages.trpc.inUse;
   const usingTw = packages.tailwind.inUse;
   const usingAuth = packages?.nextAuth.inUse;
   const usingBetterAuth = packages?.betterAuth.inUse;
+  const usingClerk = packages?.clerk.inUse;
+  const usingDb = packages.prisma.inUse || packages.drizzle.inUse;
+  const usingRuns =
+    usingClerk &&
+    usingTRPC &&
+    usingDb &&
+    packages.trelent.inUse &&
+    packages.shadcn.inUse &&
+    packages.aiElements.inUse;
+
+  if (usingRuns) {
+    // The full agent-runs experience: home page to start runs, a chat-style
+    // run page at /runs/[id], and the components both are built from.
+    fs.copySync(
+      path.join(extrasDir, "src/app/page/with-runs.tsx"),
+      path.join(projectDir, "src/app/page.tsx")
+    );
+    fs.copySync(
+      path.join(extrasDir, "src/app/runs"),
+      path.join(projectDir, "src/app/runs")
+    );
+    for (const component of [
+      "create-run.tsx",
+      "run-list.tsx",
+      "run-status-badge.tsx",
+      "run-thread.tsx",
+    ]) {
+      fs.copySync(
+        path.join(extrasDir, "src/app/_components", component),
+        path.join(projectDir, "src/app/_components", component)
+      );
+    }
+    fs.copySync(
+      path.join(extrasDir, "src/lib/models.ts"),
+      path.join(projectDir, "src/lib/models.ts")
+    );
+    return;
+  }
 
   let indexFile = "base.tsx";
-  if (usingTRPC && usingTw && usingBetterAuth) {
+  if (usingClerk) {
+    indexFile = "with-clerk.tsx";
+  } else if (usingTRPC && usingTw && usingBetterAuth) {
     indexFile = "with-better-auth-trpc-tw.tsx";
   } else if (usingTRPC && !usingTw && usingBetterAuth) {
     indexFile = "with-better-auth-trpc.tsx";
