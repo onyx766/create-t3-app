@@ -11,17 +11,17 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
-  subsets: ["latin"],
-});
+const getCookieString = () => Promise.resolve(cookies().toString());
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={geist.className}>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+      <body className={inter.className}>
+        <TRPCReactProvider cookiePromise={getCookieString()}>
+          {children}
+        </TRPCReactProvider>
       </body>
     </html>
   );
