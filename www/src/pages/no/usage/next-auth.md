@@ -119,8 +119,8 @@ export const createContext = async (opts: CreateNextContextOptions) => {
 2. Lag en tRPC-middleware som sjekker om brukeren er autentisert. Vi bruker deretter middlewaren i en `protectedProcedure`. Hvert kall av disse prosedyrene må autentiseres, ellers kastes en feilmelding, som kan håndteres av klienten.
 
 ```ts:server/api/trpc.ts
-const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -129,9 +129,7 @@ const isAuthed = t.middleware(({ ctx, next }) => {
       session: { ...ctx.session, user: ctx.session.user },
     },
   });
-});
-
-export const protectedProcedure = t.procedure.use(isAuthed);
+}));
 ```
 
 `Session`-objektet er en minimal representasjon av brukeren og inneholder bare noen få felt. Hvis du bruker `protectedProcedures`, har du tilgang til brukerens ID, som kan brukes til å hente ut mer data fra databasen.
@@ -181,8 +179,8 @@ Bruk av NextAuth.js med Next.js middleware [krever bruk av "JWT session strategy
 
 2. Bytt til "OAuth2 => Generelt" i settings-menyen
 
-- Kopier klient-ID-en og lim den inn i `DISCORD_CLIENT_ID` i `.env`.
-- Under Client Secret, klikk på "Reset Secret" og kopier denne strengen til `DISCORD_CLIENT_SECRET` i `.env`. Vær forsiktig siden du ikke lenger vil kunne se denne hemmeligheten og tilbakestilling av den vil føre til at den eksisterende hemmeligheten utløper.
+- Kopier klient-ID-en og lim den inn i `AUTH_DISCORD_ID` i `.env`.
+- Under Client Secret, klikk på "Reset Secret" og kopier denne strengen til `AUTH_DISCORD_SECRET` i `.env`. Vær forsiktig siden du ikke lenger vil kunne se denne hemmeligheten og tilbakestilling av den vil føre til at den eksisterende hemmeligheten utløper.
 - Klikk på "Add Redirect" og lim inn `<app url>/api/auth/callback/discord` (eksempel for utvikling i lokal miljø: <code class="break-all">http://localhost:3000/api/auth/callback/discord</code>)
 - Lagre endringene dine
 - Det er mulig, men ikke anbefalt, å bruke samme Discord-applikasjon for utvikling og produksjon. Du kan også vurdere å [Mocke leverandøren](https://github.com/trpc/trpc/blob/main/examples/next-prisma-websockets-starter/src/pages/api/auth/%5B...nextauth%5D.ts) under utviklingen.

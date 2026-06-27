@@ -39,11 +39,11 @@ NextAuth.js と Prisma を組み合わせて選択すると、`User`, `Session`,
 ```
 
 ```ts:prisma/seed.ts
-import { prisma } from "../src/server/db";
+import { db } from "../src/server/db";
 
 async function main() {
   const id = "cl9ebqhxk00003b600tymydho";
-  await prisma.example.upsert({
+  await db.example.upsert({
     where: {
       id,
     },
@@ -56,11 +56,11 @@ async function main() {
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
+    await db.$disconnect();
     process.exit(1);
   });
 ```
@@ -75,4 +75,4 @@ main()
 | Prisma GitHub                           | https://github.com/prisma/prisma                                                                                                                  |
 | Prisma マイグレーションプレイグラウンド | https://playground.prisma.io/guides                                                                                                               |
 | NextAuth.JS Prisma アダプタ             | https://next-auth.js.org/adapters/prisma                                                                                                          |
-| Planetscale 接続ガイド                  | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |
+| PlanetScale 接続ガイド                  | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |

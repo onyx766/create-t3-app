@@ -8,17 +8,24 @@ import { isInsideGitRepo, isRootGitRepo } from "./git.js";
 export const logNextSteps = async ({
   projectName = DEFAULT_APP_NAME,
   packages,
-  appRouter,
   noInstall,
   projectDir,
+  databaseProvider,
 }: Pick<
   InstallerOptions,
-  "projectName" | "packages" | "noInstall" | "projectDir" | "appRouter"
+  | "projectName"
+  | "packages"
+  | "noInstall"
+  | "projectDir"
+  | "appRouter"
+  | "databaseProvider"
 >) => {
   const pkgManager = getUserPkgManager();
 
   logger.info("Next steps:");
-  projectName !== "." && logger.info(`  cd ${projectName}`);
+  if (projectName !== ".") {
+    logger.info(`  cd ${projectName}`);
+  }
   if (noInstall) {
     // To reflect yarn's default behavior of installing packages when no additional args provided
     if (pkgManager === "yarn") {
@@ -28,12 +35,22 @@ export const logNextSteps = async ({
     }
   }
 
+  if (["postgres", "mysql"].includes(databaseProvider)) {
+    logger.info("  Start up a database, if needed using './start-database.sh'");
+  }
+
   if (packages?.prisma.inUse || packages?.drizzle.inUse) {
     if (["npm", "bun"].includes(pkgManager)) {
       logger.info(`  ${pkgManager} run db:push`);
     } else {
       logger.info(`  ${pkgManager} db:push`);
     }
+  }
+
+  if (packages?.nextAuth.inUse) {
+    logger.info(
+      `  Fill in your .env with necessary values. See https://create.t3.gg/en/usage/first-steps for more info.`
+    );
   }
 
   if (["npm", "bun"].includes(pkgManager)) {
@@ -46,17 +63,4 @@ export const logNextSteps = async ({
     logger.info(`  git init`);
   }
   logger.info(`  git commit -m "initial commit"`);
-
-  if (appRouter) {
-    logger.warn(
-      `\nThank you for trying out the App Router option. If you encounter any issues, please open an issue!`
-    );
-  }
-
-  if (packages?.drizzle.inUse) {
-    logger.warn(
-      `\nThank you for trying out the new Drizzle option. If you encounter any issues, please open an issue!`,
-      `\nNote: We use the PlanetScale driver so that you can query your data in edge runtimes. If you want to use a different driver, you'll need to change it yourself.`
-    );
-  }
 };

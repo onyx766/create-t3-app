@@ -39,11 +39,11 @@ O banco de dados padrão é um banco de dados SQLite, que é ótimo para desenvo
 ```
 
 ```ts:prisma/seed.ts
-import { prisma } from "../src/server/db/client";
+import { db } from "../src/server/db/client";
 
 async function main() {
   const id = "cl9ebqhxk00003b600tymydho";
-  await prisma.example.upsert({
+  await db.example.upsert({
     where: {
       id,
     },
@@ -56,11 +56,11 @@ async function main() {
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
+    await db.$disconnect();
     process.exit(1);
   });
 ```
@@ -74,4 +74,4 @@ Em seguida, basta executar `pnpm db-seed` (ou `npm`/`yarn`) para propagar seu ba
 | Documentação do Prisma               | https://www.prisma.io/docs/                                                                                                                       |
 | GitHub do Prisma                     | https://github.com/prisma/prisma                                                                                                                  |
 | Adaptador de Prisma para NextAuth.js | https://next-auth.js.org/adapters/prisma                                                                                                          |
-| Guia de Conexão com Planetscale      | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |
+| Guia de Conexão com PlanetScale      | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |

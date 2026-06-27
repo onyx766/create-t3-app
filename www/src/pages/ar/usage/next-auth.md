@@ -99,8 +99,8 @@ export const createContext = async (opts: CreateNextContextOptions) => {
 2. أنشئ tRPC Middleware وتأكد ما اذا كان هذا المستخدم يملك الصلاحيات اللازمة أم لا.
 
 ```ts:server/trpc/trpc.ts
-const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -110,8 +110,6 @@ const isAuthed = t.middleware(({ ctx, next }) => {
     },
   });
 });
-
-export const protectedProcedure = t.procedure.use(isAuthed);
 ```
 
 الـ Session Object صغير ويحتوي علي عدد قليل من الخانات، وعند استخدامك لـ `protectedProcedures`يمكنك الوصول الى هذة البيانات منها الـ UserId وعندها يمكنك عمل fetch لبيانات اخرى من قاعدة البيانات.
@@ -161,9 +159,9 @@ const userRouter = router({
 
 2. في settings menu اضغط على OAuth2 ثم General
 
-3. إنسخ الـ Client ID وضعة في `.env` كـ DISCORD_CLIENT_ID
+3. إنسخ الـ Client ID وضعة في `.env` كـ AUTH_DISCORD_ID
 
-4. تحت Client Secret اضغط على "Reset Secret" ونسخ النص الجديد وضعه في `.env` كـ `DISCORD_CLIENT_SECRET `.
+4. تحت Client Secret اضغط على "Reset Secret" ونسخ النص الجديد وضعه في `.env` كـ `AUTH_DISCORD_SECRET `.
    كن حذرًا لأنك لن تتمكن من رؤية هذا كلمة السر مرة أخرى ، ستؤدي إعادة تعيينها إلى انتهاء صلاحية كلمة السر الحالية
 5. اضغط على Add Redirect واضف رابط إعادة التوجيه`http://localhost:3000/api/auth/callback/discord` كمثال
 6. احفظ التعديلات

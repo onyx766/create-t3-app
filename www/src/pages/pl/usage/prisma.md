@@ -39,11 +39,11 @@ Domyślna baza danych to baza SQLite, która jest znakomita do szybkiego pisania
 ```
 
 ```ts:prisma/seed.ts
-import { prisma } from "../src/server/db/client";
+import { db } from "../src/server/db/client";
 
 async function main() {
   const id = "cl9ebqhxk00003b600tymydho";
-  await prisma.example.upsert({
+  await db.example.upsert({
     where: {
       id,
     },
@@ -56,11 +56,11 @@ async function main() {
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
+    await db.$disconnect();
     process.exit(1);
   });
 ```
@@ -75,4 +75,4 @@ Następnie uruchom po prostu `pnpm db-seed` (lub `npm`/`yarn`) aby wykonać seed
 | GitHub Prismy                     | https://github.com/prisma/prisma                                                                                                                  |
 | Prisma Migrate Playground         | https://playground.prisma.io/guides                                                                                                               |
 | Adapter NextAuth.JS dla Prismy    | https://next-auth.js.org/adapters/prisma                                                                                                          |
-| Poradnik Połączenia z Planetscale | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |
+| Poradnik Połączenia z PlanetScale | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |

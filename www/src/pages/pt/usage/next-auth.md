@@ -122,19 +122,17 @@ export const createContext = async (opts: CreateNextContextOptions) => {
 2. Criar um middleware tRPC que verifique se o usuário está autenticado. Em seguida, usamos o middleware em um `protectedProcedure`. Qualquer chamador para esses procedimentos deve ser autenticado, caso contrário, será lançado um erro que pode ser tratado adequadamente pelo cliente.
 
 ```ts:server/trpc/trpc.ts
-const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
-      // Infere `session` como não-nulo
+      // inferer `session` som ikke-nullbar
       session: { ...ctx.session, user: ctx.session.user },
     },
   });
-});
-
-export const protectedProcedure = t.procedure.use(isAuthed);
+}));
 ```
 
 O objeto de sessão é uma representação leve e mínima do usuário e contém apenas alguns campos. Ao usar `protectedProcedures`, você tem acesso ao id do usuário que pode ser usado para buscar mais dados do banco de dados.
@@ -183,8 +181,8 @@ Uso de NextAuth.js com middleware Next.js [requer o uso da estratégia de sessã
 1. Vá para [a seção Aplicativos no Portal do desenvolvedor do Discord](https://discord.com/developers/applications) e clique em "Novo aplicativo"
 2. No menu de configurações, vá para "OAuth2 => Geral"
 
-- Copie o Client ID e cole-o em `DISCORD_CLIENT_ID` em `.env`.
-- Em Client Secret, clique em "Reset Secret" e copie essa string para `DISCORD_CLIENT_SECRET` em `.env`. Tenha cuidado, pois você não poderá ver esse segredo novamente e redefini-lo fará com que o existente expire.
+- Copie o Client ID e cole-o em `AUTH_DISCORD_ID` em `.env`.
+- Em Client Secret, clique em "Reset Secret" e copie essa string para `AUTH_DISCORD_SECRET` em `.env`. Tenha cuidado, pois você não poderá ver esse segredo novamente e redefini-lo fará com que o existente expire.
 - Clique em "Add Redirect" e cole em `<app url>/api/auth/callback/discord` (exemplo para desenvolvimento local: <code class="break-all">http://localhost:3000/api/auth/callback/discord</code>)
 - Salve suas alterações
 - É possível, mas não recomendado, usar o mesmo aplicativo Discord tanto para desenvolvimento quanto para produção. Você também pode considerar [mockar o Provider](https://github.com/trpc/trpc/blob/next/examples/next-prisma-starter-websockets/src/pages/api/auth/%5B...nextauth%5D.ts) durante o desenvolvimento.

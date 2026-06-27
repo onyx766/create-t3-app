@@ -122,8 +122,8 @@ export const createContext = async (opts: CreateNextContextOptions) => {
 2. ユーザーが認証されているかどうかをチェックする tRPC ミドルウェアを作成します。そして、そのミドルウェアを `protectedProcedure` で使用します。これらのプロシージャの呼び出し元はすべて認証されていなければなりません。そうでなければ、エラーが投げられるので、クライアントで適切にエラー処理を行えます。
 
 ```ts:server/api/trpc.ts
-const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+export const protectedProcedure = t.procedure.use(({ ctx, next }) =>  {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -132,9 +132,7 @@ const isAuthed = t.middleware(({ ctx, next }) => {
       session: { ...ctx.session, user: ctx.session.user },
     },
   });
-});
-
-export const protectedProcedure = t.procedure.use(isAuthed);
+})
 ```
 
 セッションオブジェクトは、ユーザーの軽くて最小限の表現であり、いくつかのフィールドしか含んでいません。`protectedProcedures`を使用するとユーザー id にアクセスでき、データベースからさらにデータを取得するのに使用できます。
@@ -183,8 +181,8 @@ NextAuth.js を Next.js ミドルウェアで利用する場合、認証に [JWT
 1. [Discord Developer Portal の Application セクション](https://discord.com/developers/applications)に向かい「New Application」をクリックします。
 2. 設定メニューの 「OAuth2 ⇒ General」に行きます
 
-- Client ID をコピーして、`.env`の`DISCORD_CLIENT_ID`に貼り付けます。
-- Client Secret の下にある 「Reset Secret」をクリックし、その文字列を`.env`の`DISCORD_CLIENT_SECRET`にコピーしてください。このシークレット情報は二度と表示されないことと、リセットすると既存のシークレット情報は失効してしまうことについて注意してください。
+- Client ID をコピーして、`.env`の`AUTH_DISCORD_ID`に貼り付けます。
+- Client Secret の下にある 「Reset Secret」をクリックし、その文字列を`.env`の`AUTH_DISCORD_SECRET`にコピーしてください。このシークレット情報は二度と表示されないことと、リセットすると既存のシークレット情報は失効してしまうことについて注意してください。
 - 「Add Redirect」をクリックし、`<app url>/api/auth/callback/discord` を貼り付ける(ローカル開発サーバの場合の例：<code class="break-all">http://localhost:3000/api/auth/callback/discord</code>)
 - 変更を保存します
 - 開発用と本番用で同じ Discord Application を使用できますが、推奨はしません。また、開発時には[プロバイダをモックする](https://github.com/trpc/trpc/blob/main/examples/next-prisma-websockets-starter/src/pages/api/auth/%5B...nextauth%5D.ts)こと検討するのもよいでしょう。

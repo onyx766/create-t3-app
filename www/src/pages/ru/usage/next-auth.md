@@ -122,8 +122,8 @@ export const createContext = async (opts: CreateNextContextOptions) => {
 2. Создайте tRPC middleware, которое проверяет, аутентифицирован ли пользователь. Затем мы используем middleware в `protectedProcedure`. Любой вызывающий эти процедуры должен быть аутентифицирован, иначе будет сгенерирована ошибка, которую можно правильно обработать на стороне клиента.
 
 ```ts:server/api/trpc.ts
-const isAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+export const protectedProcedure = t.procedure.use(({ ctx, next }) =>  {
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
@@ -132,9 +132,7 @@ const isAuthed = t.middleware(({ ctx, next }) => {
       session: { ...ctx.session, user: ctx.session.user },
     },
   });
-});
-
-export const protectedProcedure = t.procedure.use(isAuthed);
+})
 ```
 
 Обект сессии - это легкое, минимальное представление пользователя и содержит только несколько полей. При использовании `protectedProcedures` у вас есть доступ к идентификатору пользователя, который можно использовать для получения большего количества данных из базы данных.
@@ -183,8 +181,8 @@ const userRouter = router({
 1. Перейдите в [раздел Applications в Discord Developer Portal](https://discord.com/developers/applications), и нажмите на "New Application"
 2. В меню настроек перейдите к "OAuth2 => General"
 
-- Скопируйте Client ID и вставьте его в `DISCORD_CLIENT_ID` в `.env`.
-- Возле Client Secret нажмите "Reset Secret" и скопируйте эту строку в `DISCORD_CLIENT_SECRET` в `.env`. Будьте осторожны, поскольку вы больше не сможете увидеть этот секрет, и сброс его приведет к тому, что существующий истечет.
+- Скопируйте Client ID и вставьте его в `AUTH_DISCORD_ID` в `.env`.
+- Возле Client Secret нажмите "Reset Secret" и скопируйте эту строку в `AUTH_DISCORD_SECRET` в `.env`. Будьте осторожны, поскольку вы больше не сможете увидеть этот секрет, и сброс его приведет к тому, что существующий истечет.
 - Нажмите "Add Redirect" и вставьте `<app url>/api/auth/callback/discord` (пример для локальной разработки: <code class="break-all">http://localhost:3000/api/auth/callback/discord</code>)
 - Сохраните изменения
 - Возможно, но не рекомендуется, использовать одно и то же приложение Discord для разработки и продакшена. Вы также можете рассмотреть [Mocking the Provider](https://github.com/trpc/trpc/blob/next/examples/next-prisma-starter-websockets/src/pages/api/auth/%5B...nextauth%5D.ts) во время разработки.

@@ -39,11 +39,11 @@ Standarddatabasen er en SQLite-database, som er meget godt egnet for utvikling o
 ```
 
 ```ts:prisma/seed.ts
-import { prisma } from "../src/server/db/client";
+import { db } from "../src/server/db/client";
 
 async function main() {
   const id = "cl9ebqhxk00003b600tymydho";
-  await prisma.example.upsert({
+  await db.example.upsert({
     where: {
       id,
     },
@@ -56,11 +56,11 @@ async function main() {
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
+    await db.$disconnect();
     process.exit(1);
   });
 ```
@@ -75,4 +75,4 @@ Deretter kan du kjøre `pnpm db-seed` (eller `npm`/`yarn`) for å fylle inn data
 | Prisma GitHub                     | https://github.com/prisma/prisma                                                                                                                  |
 | Prisma Migrate Playground         | https://playground.prisma.io/guides                                                                                                               |
 | NextAuth.JS Prisma Adapter        | https://next-auth.js.org/adapters/prisma                                                                                                          |
-| Planetscale Tilkoblingsveiledning | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |
+| PlanetScale Tilkoblingsveiledning | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |

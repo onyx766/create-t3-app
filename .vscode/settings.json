@@ -1,6 +1,13 @@
 {
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#1f0d49",
+    "titleBar.activeForeground": "#e2e8f0",
+    "titleBar.inactiveBackground": "#181239",
+    "titleBar.inactiveForeground": "#b1b6bd"
+  },
+
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,

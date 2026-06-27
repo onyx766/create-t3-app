@@ -179,24 +179,24 @@ Create T3 App のコントリビューターである[Christopher Ehrlich](https
 
 ```ts:pages/api/users/[id].ts
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { appRouter } from "../../../server/api/root";
+import { appRouter, createCaller } from "../../../server/api/root";
 import { createTRPCContext } from "../../../server/api/trpc";
 
 const userByIdHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   // Create context and caller
   const ctx = await createTRPCContext({ req, res });
-  const caller = appRouter.createCaller(ctx);
+  const caller = createCaller(ctx);
   try {
     const { id } = req.query;
     const user = await caller.user.getById(id);
     res.status(200).json(user);
   } catch (cause) {
     if (cause instanceof TRPCError) {
-      // An error from tRPC occured
+      // An error from tRPC occurred
       const httpCode = getHTTPStatusCodeFromError(cause);
       return res.status(httpCode).json(cause);
     }
-    // Another error occured
+    // Another error occurred
     console.error(cause);
     res.status(500).json({ message: "Internal server error" });
   }

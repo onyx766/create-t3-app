@@ -10,7 +10,10 @@ import {
   selectLayoutFile,
   selectPageFile,
 } from "~/helpers/selectBoilerplate.js";
-import { type PkgInstallerMap } from "~/installers/index.js";
+import {
+  type DatabaseProvider,
+  type PkgInstallerMap,
+} from "~/installers/index.js";
 import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 
 interface CreateProjectOptions {
@@ -20,6 +23,7 @@ interface CreateProjectOptions {
   noInstall: boolean;
   importAlias: string;
   appRouter: boolean;
+  databaseProvider: DatabaseProvider;
 }
 
 export const createProject = async ({
@@ -28,6 +32,7 @@ export const createProject = async ({
   packages,
   noInstall,
   appRouter,
+  databaseProvider,
 }: CreateProjectOptions) => {
   const pkgManager = getUserPkgManager();
   const projectDir = path.resolve(process.cwd(), projectName);
@@ -40,6 +45,7 @@ export const createProject = async ({
     scopedAppName,
     noInstall,
     appRouter,
+    databaseProvider,
   });
 
   // Install the selected packages
@@ -51,14 +57,15 @@ export const createProject = async ({
     packages,
     noInstall,
     appRouter,
+    databaseProvider,
   });
 
   // Select necessary _app,index / layout,page files
   if (appRouter) {
     // Replace next.config
     fs.copyFileSync(
-      path.join(PKG_ROOT, "template/extras/config/next-config-appdir.mjs"),
-      path.join(projectDir, "next.config.mjs")
+      path.join(PKG_ROOT, "template/extras/config/next-config-appdir.js"),
+      path.join(projectDir, "next.config.js")
     );
 
     selectLayoutFile({ projectDir, packages });

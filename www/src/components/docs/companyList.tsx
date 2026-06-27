@@ -50,6 +50,21 @@ const companies: Company[] = [
     linkName: "flowgpt.com",
     link: "https://flowgpt.com",
   },
+  {
+    name: "Papertrail",
+    linkName: "Papertrail",
+    link: "https://papertrail.biblish.com",
+  },
+  {
+    name: "AIKeywording",
+    linkName: "aikeywording.com/",
+    link: "https://aikeywording.com/",
+  },
+  {
+    name: "HIX AI",
+    linkName: "HIX AI",
+    link: "https://hix.ai",
+  },
 ];
 
 export default function CompanyList({

@@ -1,8 +1,9 @@
+import scrollbar from "tailwind-scrollbar";
 import { type Config } from "tailwindcss";
 
 export default {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
-  darkMode: "class",
+  darkMode: "selector",
   theme: {
     extend: {
       colors: {
@@ -74,6 +75,5 @@ export default {
       ],
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-call
-  plugins: [require("tailwind-scrollbar")({ nocompatible: true })],
+  plugins: [scrollbar({ nocompatible: true })],
 } satisfies Config;

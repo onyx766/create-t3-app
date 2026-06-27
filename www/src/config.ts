@@ -36,11 +36,12 @@ export const KNOWN_LANGUAGES = {
   ru: "Русский",
   no: "Norsk",
   pl: "Polski",
+  uk: "Українська",
   "zh-hans": "简体中文",
 } as const;
 export type KnownLanguageCode = keyof typeof KNOWN_LANGUAGES;
 
-export const GITHUB_EDIT_URL = `https://github.com/t3-oss/create-t3-app/tree/next/www`;
+export const GITHUB_EDIT_URL = `https://github.com/t3-oss/create-t3-app/tree/main/www`;
 
 export const COMMUNITY_INVITE_URL = `https://t3.gg/discord`;
 
@@ -85,7 +86,7 @@ export const SIDEBAR: Sidebar = {
       { text: "مُقدمة", link: "ar/introduction" },
       { text: "لماذا CT3A؟", link: "ar/why" },
       { text: "التثبيت", link: "ar/installation" },
-      { text: "بِنية المجلد", link: "ar/folder-structure" },
+      { text: "(Pages)بِنية المجلد", link: "ar/folder-structure-pages" },
       { text: "أسئلة شائعة", link: "ar/faq" },
       { text: "اعمال بواسطة T3", link: "ar/t3-collection" },
       { text: "ترشيحات أُخري", link: "ar/other-recs" },
@@ -113,7 +114,8 @@ export const SIDEBAR: Sidebar = {
       { text: "Introduction", link: "en/introduction" },
       { text: "Why CT3A?", link: "en/why" },
       { text: "Installation", link: "en/installation" },
-      { text: "Folder Structure", link: "en/folder-structure" },
+      { text: "Folder Structure (Pages)", link: "en/folder-structure-pages" },
+      { text: "Folder Structure (App)", link: "en/folder-structure-app" },
       { text: "FAQ", link: "en/faq" },
       { text: "T3 Collection", link: "en/t3-collection" },
       { text: "Examples", link: "en/examples" },
@@ -144,7 +146,10 @@ export const SIDEBAR: Sidebar = {
       { text: "Introducción", link: "es/introduction" },
       { text: "¿Por qué CT3A?", link: "es/why" },
       { text: "Instalación", link: "es/installation" },
-      { text: "Estructura de Carpetas", link: "es/folder-structure" },
+      {
+        text: "Estructura de Carpetas (Pages)",
+        link: "es/folder-structure-pages",
+      },
       { text: "Preguntas Frecuentes", link: "es/faq" },
       { text: "Colección T3", link: "es/t3-collection" },
       { text: "Otras Recomendaciones", link: "es/other-recs" },
@@ -170,7 +175,7 @@ export const SIDEBAR: Sidebar = {
       { text: "イントロダクション", link: "ja/introduction" },
       { text: "CT3A を選ぶ理由", link: "ja/why" },
       { text: "インストール", link: "ja/installation" },
-      { text: "ファルダ構成", link: "ja/folder-structure" },
+      { text: "ファルダ構成 (Pages)", link: "ja/folder-structure-pages" },
       { text: "FAQ", link: "ja/faq" },
       { text: "T3 コレクション", link: "ja/t3-collection" },
       { text: "その他のオススメ", link: "ja/other-recs" },
@@ -199,9 +204,10 @@ export const SIDEBAR: Sidebar = {
       { text: "Wstęp", link: "pl/introduction" },
       { text: "Dlaczego CT3A?", link: "pl/why" },
       { text: "Instalacja", link: "pl/installation" },
-      { text: "Struktura Projektu", link: "pl/folder-structure" },
+      { text: "Struktura Projektu (Pages)", link: "pl/folder-structure-pages" },
       { text: "FAQ", link: "pl/faq" },
       { text: "Kolekcja T3", link: "pl/t3-collection" },
+      { text: "Przykłady", link: "pl/examples" },
       { text: "Inne Rekomendacje", link: "pl/other-recs" },
     ],
     Usage: [
@@ -223,12 +229,46 @@ export const SIDEBAR: Sidebar = {
       { text: "Docker", link: "pl/deployment/docker" },
     ],
   },
+  uk: {
+    "Create T3 App": [
+      { text: "Вступ", link: "uk/introduction" },
+      { text: "Чому CT3A?", link: "uk/why" },
+      { text: "Встановлення", link: "uk/installation" },
+      { text: "Структура папок (Pages)", link: "uk/folder-structure-pages" },
+      { text: "FAQ", link: "uk/faq" },
+      { text: "T3 Колекція", link: "uk/t3-collection" },
+      { text: "Приклади", link: "uk/examples" },
+      { text: "Інші рекомендації", link: "uk/other-recs" },
+    ],
+    Usage: [
+      { text: "Перші кроки", link: "uk/usage/first-steps" },
+      { text: "Next.js", link: "uk/usage/next-js" },
+      { text: "TypeScript", link: "uk/usage/typescript" },
+      { text: "tRPC", link: "uk/usage/trpc" },
+      { text: "Drizzle", link: "uk/usage/drizzle" },
+      { text: "Prisma", link: "uk/usage/prisma" },
+      { text: "NextAuth.js", link: "uk/usage/next-auth" },
+      {
+        text: "Змінні середовища",
+        link: "uk/usage/env-variables",
+      },
+      { text: "Tailwind CSS", link: "uk/usage/tailwind" },
+    ],
+    Deployment: [
+      { text: "Vercel", link: "uk/deployment/vercel" },
+      { text: "Netlify", link: "uk/deployment/netlify" },
+      { text: "Docker", link: "uk/deployment/docker" },
+    ],
+  },
   fr: {
     "Create T3 App": [
       { text: "Introduction", link: "fr/introduction" },
       { text: "Pourquoi CT3A?", link: "fr/why" },
       { text: "Installation", link: "fr/installation" },
-      { text: "Structure des dossiers", link: "fr/folder-structure" },
+      {
+        text: "Structure des dossiers (Pages)",
+        link: "fr/folder-structure-pages",
+      },
       { text: "FAQ", link: "fr/faq" },
       { text: "Collection T3", link: "fr/t3-collection" },
       { text: "Exemples", link: "fr/examples" },
@@ -258,7 +298,10 @@ export const SIDEBAR: Sidebar = {
       { text: "Introdução", link: "pt/introduction" },
       { text: "Por que o CT3A?", link: "pt/why" },
       { text: "Instalação", link: "pt/installation" },
-      { text: "Estrutura de Pastas", link: "pt/folder-structure" },
+      {
+        text: "Estrutura de Pastas (Pages)",
+        link: "pt/folder-structure-pages",
+      },
       { text: "Perguntas Frequentes", link: "pt/faq" },
       { text: "Coleção T3", link: "pt/t3-collection" },
       { text: "Outras Recomendações", link: "pt/other-recs" },
@@ -287,7 +330,7 @@ export const SIDEBAR: Sidebar = {
       { text: "Введение", link: "ru/introduction" },
       { text: "Почему CT3A?", link: "ru/why" },
       { text: "Установка", link: "ru/installation" },
-      { text: "Файловая структура", link: "ru/folder-structure" },
+      { text: "Файловая структура (Pages)", link: "ru/folder-structure-pages" },
       { text: "FAQ", link: "ru/faq" },
       { text: "T3 коллекция", link: "ru/t3-collection" },
       { text: "Дополнительные рекомендации", link: "ru/other-recs" },
@@ -316,7 +359,7 @@ export const SIDEBAR: Sidebar = {
       { text: "Introduksjon", link: "no/introduction" },
       { text: "Hvorfor CT3A?", link: "no/why" },
       { text: "Installasjon", link: "no/installation" },
-      { text: "Mappestruktur", link: "no/folder-structure" },
+      { text: "Mappestruktur (Pages)", link: "no/folder-structure-pages" },
       { text: "FAQ", link: "no/faq" },
       { text: "T3-Kolleksjonen", link: "no/t3-collection" },
       { text: "Andre Anbefalinger", link: "no/other-recs" },
@@ -345,7 +388,7 @@ export const SIDEBAR: Sidebar = {
       { text: "简介", link: "zh-hans/introduction" },
       { text: "为什么选择 CT3A?", link: "zh-hans/why" },
       { text: "安装", link: "zh-hans/installation" },
-      { text: "文件夹结构", link: "zh-hans/folder-structure" },
+      { text: "文件夹结构 (Pages)", link: "zh-hans/folder-structure-pages" },
       { text: "常见疑问", link: "zh-hans/faq" },
       { text: "T3 合集", link: "zh-hans/t3-collection" },
       { text: "其他推荐", link: "zh-hans/other-recs" },
@@ -355,6 +398,7 @@ export const SIDEBAR: Sidebar = {
       { text: "Next.js", link: "zh-hans/usage/next-js" },
       { text: "TypeScript", link: "zh-hans/usage/typescript" },
       { text: "tRPC", link: "zh-hans/usage/trpc" },
+      { text: "Drizzle", link: "zh-hans/usage/drizzle" },
       { text: "Prisma", link: "zh-hans/usage/prisma" },
       { text: "NextAuth.js", link: "zh-hans/usage/next-auth" },
       {
@@ -395,6 +439,11 @@ export const SIDEBAR_HEADER_MAP: Record<
     "Create T3 App": "Create T3 App",
     Usage: "Korzystanie Z Narzędzia",
     Deployment: "Deployment",
+  },
+  uk: {
+    "Create T3 App": "Create T3 App",
+    Usage: "Використання",
+    Deployment: "Деплоймент",
   },
   ar: {
     "Create T3 App": "Create T3 App",

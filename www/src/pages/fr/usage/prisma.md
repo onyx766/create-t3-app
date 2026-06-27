@@ -39,11 +39,11 @@ La base de données par défaut est une base de données SQLite, idéale pour le
 ```
 
 ```ts:prisma/seed.ts
-import { prisma } from "../src/server/db";
+import { db } from "../src/server/db";
 
 async function main() {
   const id = "cl9ebqhxk00003b600tymydho";
-  await prisma.example.upsert({
+  await db.example.upsert({
     where: {
       id,
     },
@@ -56,11 +56,11 @@ async function main() {
 
 main()
   .then(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   })
   .catch(async (e) => {
     console.error(e);
-    await prisma.$disconnect();
+    await db.$disconnect();
     process.exit(1);
   });
 ```
@@ -74,4 +74,4 @@ Ensuite, exécutez simplement `pnpm db-seed` (ou `npm`/`yarn`) pour amorcer votr
 | Documentation Prisma               | https://www.prisma.io/docs/                                                                                                                       |
 | Prisma GitHub                      | https://github.com/prisma/prisma                                                                                                                  |
 | Adaptateur Prisma pour NextAuth.JS | https://next-auth.js.org/adapters/prisma                                                                                                          |
-| Guide de connexion à Planetscale   | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |
+| Guide de connexion à PlanetScale   | https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project/relational-databases/connect-your-database-typescript-planetscale |

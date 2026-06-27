@@ -14,6 +14,7 @@ import { getUserPkgManager } from "~/utils/getUserPkgManager.js";
 import { logger } from "~/utils/logger.js";
 import { parseNameAndPath } from "~/utils/parseNameAndPath.js";
 import { renderTitle } from "~/utils/renderTitle.js";
+import { formatProject } from "./helpers/format.js";
 import { installDependencies } from "./helpers/installDependencies.js";
 import { getVersion } from "./utils/getT3Version.js";
 import {
@@ -31,15 +32,18 @@ const main = async () => {
   const npmVersion = await getNpmVersion();
   const pkgManager = getUserPkgManager();
   renderTitle();
-  npmVersion && renderVersionWarning(npmVersion);
+  if (npmVersion) {
+    renderVersionWarning(npmVersion);
+  }
 
   const {
     appName,
     packages,
     flags: { noGit, noInstall, importAlias, appRouter },
+    databaseProvider,
   } = await runCli();
 
-  const usePackages = buildPkgInstallerMap(packages);
+  const usePackages = buildPkgInstallerMap(packages, databaseProvider);
 
   // e.g. dir/@mono/app returns ["@mono/app", "dir/app"]
   const [scopedAppName, appDir] = parseNameAndPath(appName);
@@ -48,6 +52,7 @@ const main = async () => {
     projectName: appDir,
     scopedAppName,
     packages: usePackages,
+    databaseProvider,
     importAlias,
     noInstall,
     appRouter,
@@ -79,13 +84,20 @@ const main = async () => {
 
   if (!noInstall) {
     await installDependencies({ projectDir });
-  }
 
-  // Rename _eslintrc.json to .eslintrc.json - we use _eslintrc.json to avoid conflicts with the monorepos linter
-  fs.renameSync(
-    path.join(projectDir, "_eslintrc.cjs"),
-    path.join(projectDir, ".eslintrc.cjs")
-  );
+    if (usePackages.prisma.inUse) {
+      logger.info("Generating Prisma client...");
+      await execa("npx", ["prisma", "generate"], { cwd: projectDir });
+      logger.info("Successfully generated Prisma client!");
+    }
+
+    await formatProject({
+      pkgManager,
+      projectDir,
+      eslint: packages.includes("eslint"),
+      biome: packages.includes("biome"),
+    });
+  }
 
   if (!noGit) {
     await initializeGit(projectDir);
@@ -97,6 +109,7 @@ const main = async () => {
     appRouter,
     noInstall,
     projectDir,
+    databaseProvider,
   });
 
   process.exit(0);

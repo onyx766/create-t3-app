@@ -9,6 +9,10 @@ You just scaffolded a new T3 App and are ready to go. Here is the bare minimum t
 
 ## Database
 
+### MySQL, PostgreSQL
+
+If you chose MySQL or PostgreSQL as your database, your T3 app will come with a `start-database.sh` bash script that can create a docker container with a database for local development. If you already have a database, feel free to delete this file and put your database credentials in `.env`. On macOS, you can also use [DBngin](https://dbngin.com/) if you don't want to use docker.
+
 ### Prisma
 
 If your app includes Prisma, make sure to run `npx prisma db push` from the root directory of your app. This command will sync your Prisma schema with your database and will generate the TypeScript types for the Prisma Client based on your schema. Note that you need to [restart the TypeScript server](https://tinytip.co/tips/vscode-restart-ts/) after doing this so that it can detect the generated types.
@@ -26,12 +30,11 @@ Of course, if you prefer to use a different auth provider, you can also use one 
 1. You will need a Discord account, so register one if you haven't already.
 2. Navigate to https://discord.com/developers/applications and click "New Application" in the top right corner. Give your application a name and agree to the Terms of Service.
 3. Once your application has been created, navigate to "Settings → OAuth2 → General".
-4. Copy the "Client ID" and add it to your `.env` as `DISCORD_CLIENT_ID`.
-5. Click "Reset Secret", copy the new secret, and add it to your `.env` as `DISCORD_CLIENT_SECRET`.
+4. Copy the "Client ID" and add it to your `.env` as `AUTH_DISCORD_ID`.
+5. Click "Reset Secret", copy the new secret, and add it to your `.env` as `AUTH_DISCORD_SECRET`.
 6. Click "Add Redirect" and type in `http://localhost:3000/api/auth/callback/discord`.
    - For production deployment, follow the previous steps to create another Discord Application, but this time replace `http://localhost:3000` with the URL that you are deploying to.
 7. Save Changes.
-8. Set the `NEXTAUTH_SECRET` in `.env`. In development any string will work, for production see the note in `.env` on generating a secure secret.
 
 You should now be able to log in.
 

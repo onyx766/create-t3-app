@@ -17,16 +17,16 @@ export const trpcInstaller: Installer = ({
       "superjson",
       "@trpc/server",
       "@trpc/client",
-      "@trpc/next",
       "@trpc/react-query",
     ],
     devMode: false,
   });
 
   const usingAuth = packages?.nextAuth.inUse;
+  const usingBetterAuth = packages?.betterAuth.inUse;
   const usingPrisma = packages?.prisma.inUse;
   const usingDrizzle = packages?.drizzle.inUse;
-  const usingDb = usingPrisma || usingDrizzle;
+  const usingDb = usingPrisma === true || usingDrizzle === true;
 
   const extrasDir = path.join(PKG_ROOT, "template/extras");
 
@@ -37,14 +37,14 @@ export const trpcInstaller: Installer = ({
   const apiHandlerSrc = path.join(extrasDir, srcToUse);
   const apiHandlerDest = path.join(projectDir, srcToUse);
 
-  const trpcFile =
-    usingAuth && usingDb
-      ? "with-auth-db.ts"
-      : usingAuth
-      ? "with-auth.ts"
-      : usingDb
-      ? "with-db.ts"
-      : "base.ts";
+  const trpcFile = (() => {
+    if (usingBetterAuth && usingDb) return "with-better-auth-db.ts";
+    if (usingBetterAuth) return "with-better-auth.ts";
+    if (usingAuth && usingDb) return "with-auth-db.ts";
+    if (usingAuth) return "with-auth.ts";
+    if (usingDb) return "with-db.ts";
+    return "base.ts";
+  })();
   const trpcSrc = path.join(
     extrasDir,
     "src/server/api",
@@ -57,17 +57,17 @@ export const trpcInstaller: Installer = ({
   const rootRouterDest = path.join(projectDir, "src/server/api/root.ts");
 
   const exampleRouterFile =
-    usingAuth && usingPrisma
+    (usingAuth || usingBetterAuth) && usingPrisma
       ? "with-auth-prisma.ts"
-      : usingAuth && usingDrizzle
-      ? "with-auth-drizzle.ts"
-      : usingAuth
-      ? "with-auth.ts"
-      : usingPrisma
-      ? "with-prisma.ts"
-      : usingDrizzle
-      ? "with-drizzle.ts"
-      : "base.ts";
+      : (usingAuth || usingBetterAuth) && usingDrizzle
+        ? "with-auth-drizzle.ts"
+        : usingAuth || usingBetterAuth
+          ? "with-auth.ts"
+          : usingPrisma
+            ? "with-prisma.ts"
+            : usingDrizzle
+              ? "with-drizzle.ts"
+              : "base.ts";
 
   const exampleRouterSrc = path.join(
     extrasDir,
@@ -87,6 +87,12 @@ export const trpcInstaller: Installer = ({
   ];
 
   if (appRouter) {
+    addPackageDependency({
+      dependencies: ["server-only"],
+      devMode: false,
+      projectDir,
+    });
+
     const trpcDir = path.join(extrasDir, "src/trpc");
     copySrcDest.push(
       [
@@ -98,19 +104,25 @@ export const trpcInstaller: Installer = ({
         path.join(projectDir, "src/trpc/react.tsx"),
       ],
       [
-        path.join(trpcDir, "shared.ts"),
-        path.join(projectDir, "src/trpc/shared.ts"),
-      ],
-      [
         path.join(
           extrasDir,
           "src/app/_components",
-          packages?.tailwind.inUse ? "create-post-tw.tsx" : "create-post.tsx"
+          packages?.tailwind.inUse ? "post-tw.tsx" : "post.tsx"
         ),
-        path.join(projectDir, "src/app/_components/create-post.tsx"),
+        path.join(projectDir, "src/app/_components/post.tsx"),
+      ],
+      [
+        path.join(extrasDir, "src/trpc/query-client.ts"),
+        path.join(projectDir, "src/trpc/query-client.ts"),
       ]
     );
   } else {
+    addPackageDependency({
+      dependencies: ["@trpc/next"],
+      devMode: false,
+      projectDir,
+    });
+
     const utilsSrc = path.join(extrasDir, "src/utils/api.ts");
     const utilsDest = path.join(projectDir, "src/utils/api.ts");
     copySrcDest.push([utilsSrc, utilsDest]);

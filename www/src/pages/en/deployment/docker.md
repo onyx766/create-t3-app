@@ -16,7 +16,7 @@ Please note that Next.js requires a different process for build time (available 
 
 ### 1. Next Configuration
 
-In your [`next.config.mjs`](https://github.com/t3-oss/create-t3-app/blob/main/cli/template/base/next.config.mjs), add the `standalone` output-option configuration to [reduce image size by automatically leveraging output traces](https://nextjs.org/docs/advanced-features/output-file-tracing):
+In your [`next.config.js`](https://github.com/t3-oss/create-t3-app/blob/main/cli/template/base/next.config.js), add the `standalone` output-option configuration to [reduce image size by automatically leveraging output traces](https://nextjs.org/docs/advanced-features/output-file-tracing):
 
 ```diff
 export default defineNextConfig({
@@ -63,7 +63,7 @@ README.md
 ##### DEPENDENCIES
 
 FROM --platform=linux/amd64 node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat openssl1.1-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Install Prisma Client - remove if not using Prisma
@@ -77,7 +77,7 @@ COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml\* ./
 RUN \
     if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
     elif [ -f package-lock.json ]; then npm ci; \
-    elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i; \
+    elif [ -f pnpm-lock.yaml ]; then npm install -g pnpm && pnpm i; \
     else echo "Lockfile not found." && exit 1; \
     fi
 
@@ -95,7 +95,7 @@ COPY . .
 RUN \
     if [ -f yarn.lock ]; then SKIP_ENV_VALIDATION=1 yarn build; \
     elif [ -f package-lock.json ]; then SKIP_ENV_VALIDATION=1 npm run build; \
-    elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && SKIP_ENV_VALIDATION=1 pnpm run build; \
+    elif [ -f pnpm-lock.yaml ]; then npm install -g pnpm && SKIP_ENV_VALIDATION=1 pnpm run build; \
     else echo "Lockfile not found." && exit 1; \
     fi
 
@@ -108,7 +108,7 @@ ENV NODE_ENV production
 
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-COPY --from=builder /app/next.config.mjs ./
+COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
@@ -148,7 +148,7 @@ You can also use Docker Compose to build the image and run the container.
 
 <details>
     <summary>
-      Follow steps 1-4 above, click here, and include contents in <code>docker-compose.yml</code>:
+      Follow steps 1-3 above, click here, and include contents in <code>docker-compose.yml</code>:
     </summary>
 <div class="content">
 
@@ -170,10 +170,10 @@ services:
       - DATABASE_URL=database_url_goes_here
 ```
 
-Run this using the `docker compose up` command:
+Build and run this using the `docker compose up --build` command:
 
 ```bash
-docker compose up
+docker compose up --build
 ```
 
 Open [localhost:3000](http://localhost:3000/) to see your running application.

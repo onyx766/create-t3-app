@@ -2,12 +2,24 @@
 import { getIsRtlFromUrl, getLanguageFromURL } from "../../languages";
 import { fetchGithub } from "../../utils/fetchGithub";
 
-const githubStars =
-  (await fetchGithub("https://api.github.com/repos/t3-oss/create-t3-app", {
-    throwIfNoAuth: false,
-    fetchType: "repo",
-  }).then((data) => data?.stargazers_count)) ?? 42069;
+let githubStars = 28000;
+
+try {
+  const fetchedStars = await fetchGithub(
+    "https://api.github.com/repos/t3-oss/create-t3-app",
+    {
+      throwIfNoAuth: false,
+      fetchType: "repo",
+    },
+  ).then((data) => data?.stargazers_count);
+
+  githubStars = fetchedStars ?? 28000;
+} catch (e) {
+  console.error("unable to fetch from github", e);
+}
+
 const ONE_HOUR = 1 * 60 * 60;
+
 Astro.response.headers.set("Cache-Control", `public, max-age=${ONE_HOUR}`);
 
 const { pathname } = Astro.url;
@@ -28,7 +40,7 @@ const isRtl = getIsRtlFromUrl(pathname);
   <div
     id="github-star"
     class:list={[
-      "relative hidden items-center rounded-lg border border-t3-purple-200/50 bg-t3-purple-200/50 bg-clip-padding px-2 py-1 text-slate-800 no-underline !transition-colors !duration-300 group-hover:border-t3-purple-200/75 group-hover:bg-t3-purple-200/75 ltr:mr-[.33em] rtl:ml-[.33em] dark:border-t3-purple-200/20 dark:bg-t3-purple-200/10 dark:text-slate-100 dark:group-hover:border-t3-purple-200/50 dark:group-hover:bg-t3-purple-200/10 md:flex",
+      "relative hidden items-center rounded-lg border border-t3-purple-200/50 bg-t3-purple-200/50 bg-clip-padding px-2 py-1 text-slate-800 no-underline !transition-colors !duration-300 group-hover:border-t3-purple-200/75 group-hover:bg-t3-purple-200/75 md:flex ltr:mr-[.33em] rtl:ml-[.33em] dark:border-t3-purple-200/20 dark:bg-t3-purple-200/10 dark:text-slate-100 dark:group-hover:border-t3-purple-200/50 dark:group-hover:bg-t3-purple-200/10",
       [
         /** triangle arrow */
         "after:absolute after:h-0 after:w-0 after:border-8 after:border-transparent after:transition-colors after:duration-300",

@@ -16,6 +16,13 @@ const projects: App[] = [
     link: "https://openbio.app",
   },
   {
+    description: "Exaya - Organic transportation processes manager",
+    repoName: "exaya",
+    repo: "https://github.com/kralion/exaya",
+    linkName: "exaya.app",
+    link: "https://exaya.vercel.app",
+  },
+  {
     description: "TheNinja-RPG - A free browser-based ninja game",
     repoName: "TheNinjaRPG",
     repo: "https://github.com/MathiasGruber/TheNinjaRPG",
@@ -26,6 +33,14 @@ const projects: App[] = [
     description: "Create T3 Turbo - T3 Stack using Turborepo",
     repoName: "create-t3-turbo",
     repo: "https://github.com/t3-oss/create-t3-turbo",
+    linkName: "create-t3-turbo.vercel.app",
+    link: "https://create-t3-turbo.vercel.app/",
+  },
+  {
+    description:
+      "T3 turborepo template with biomejs and both shadcn native and web ui",
+    repoName: "rajatsandeepsen/t3-turbo-biome",
+    repo: "https://github.com/rajatsandeepsen/t3-turbo-biome",
     linkName: "create-t3-turbo.vercel.app",
     link: "https://create-t3-turbo.vercel.app/",
   },
@@ -58,10 +73,10 @@ const projects: App[] = [
 
   {
     description: "Josh's personal site",
-    repoName: "joshhyde9/t3-portfolio",
-    repo: "https://github.com/JoshHyde9/t3-portfolio",
-    linkName: "t3.joshhyde.me",
-    link: "https://t3.joshhyde.me",
+    repoName: "GentikSolm/imjosh-blog",
+    repo: "https://github.com/GentikSolm/imjosh-blog",
+    linkName: "imjosh.dev",
+    link: "https://imjosh.dev",
   },
 
   {
@@ -125,8 +140,8 @@ const projects: App[] = [
     description: "Railtrack",
     repoName: "noahflk/railtrack",
     repo: "https://github.com/noahflk/railtrack",
-    linkName: "railtrack.flk.li",
-    link: "https://railtrack.flk.li",
+    linkName: "railtrack.ch",
+    link: "https://railtrack.ch",
   },
 
   {
@@ -171,14 +186,6 @@ const projects: App[] = [
   },
 
   {
-    description: "Hitori - Serverless Discord bot template",
-    repoName: "astridlol/Hitori",
-    repo: "https://github.com/astridlol/hitori",
-    linkName: "(none)",
-    link: "https://github.com/astridlol/hitori",
-  },
-
-  {
     description: "CUA - Create an Universal App for web, native and desktop",
     repoName: "chen-rn/CUA",
     repo: "https://github.com/chen-rn/CUA",
@@ -207,8 +214,8 @@ const projects: App[] = [
       "Prisma Editor - A powerful tool to visualize and edit Prisma Schema",
     repoName: "mohammed-bahumaish/prisma-editor",
     repo: "https://github.com/mohammed-bahumaish/prisma-editor",
-    linkName: "prisma-editor.up.railway.app",
-    link: "https://prisma-editor.up.railway.app",
+    linkName: "prisma-editor.bahumaish.com",
+    link: "https://prisma-editor.bahumaish.com",
   },
 
   {
@@ -265,6 +272,77 @@ const projects: App[] = [
     repo: "https://github.com/meetqy/rao-pics",
     linkName: "rao.pics",
     link: "https://rao.pics",
+  },
+  {
+    description: "eBoto - One-Stop Online Voting Solution",
+    repoName: "bricesuazo/eboto",
+    repo: "https://github.com/bricesuazo/eboto",
+    linkName: "eboto-mo.com",
+    link: "https://eboto-mo.com/",
+  },
+  {
+    description:
+      "ImprovDB - The ultimate repository for improv games & exercises",
+    repoName: "aberonni/improvdb",
+    repo: "https://github.com/aberonni/improvdb",
+    linkName: "improvdb.com",
+    link: "https://improvdb.com/",
+  },
+  {
+    description: "Simple Todo app - with custom auth",
+    repoName: "Parthvsquare/t3-todo-mvc",
+    repo: "https://github.com/Parthvsquare/t3-todo-mvc",
+    linkName: "",
+    link: "",
+  },
+  {
+    description: "Profilee - A Profile Link Builder",
+    repoName: "mittalsam98/profilee",
+    repo: "https://github.com/mittalsam98/profilee",
+    linkName: "Profilee",
+    link: "https://www.profilee.info/",
+  },
+  {
+    description: "SunalRahal - Your Spotify, in a SVG",
+    repoName: "prabincankod/sunal-rahal",
+    repo: "https://github.com/prabincankod/sunal-rahal",
+    linkName: "SunalRhal",
+    link: "https://sunal-rahal.vercel.app",
+  },
+  {
+    description: "RobertHavelaar.dev - A Modern Portfolio and Tool Showcase",
+    repoName: "EastTexasElectronics/portfolio",
+    repo: "https://github.com/EastTexasElectronics/portfolio",
+    linkName: "RobertHavelaar.dev",
+    link: "https://www.roberthavelaar.dev/",
+  },
+  {
+    description: "Tasky - Simplify task management",
+    repoName: "ismaelherreradev/tasky",
+    repo: "https://github.com/ismaelherreradev/tasky",
+    linkName: "taskyboard",
+    link: "https://taskyboard.vercel.app",
+  },
+  {
+    description: "Squeak - A multiplayer Solitaire-based game",
+    repoName: "michaelongaro/Squeak",
+    repo: "https://github.com/michaelongaro/Squeak",
+    linkName: "Squeak",
+    link: "https://playsqueak.com/",
+  },
+  {
+    description: "Ray - A full stack admin starter",
+    repoName: "koujialong/ray-admin",
+    repo: "https://github.com/koujialong/ray-admin",
+    linkName: "Ray",
+    link: "https://koujialong-ray.vercel.app/",
+  },
+  {
+    description: "Aiseka - Discover the best Color Palette & Color Tools",
+    repoName: "meetqy/aiseka",
+    repo: "https://github.com/meetqy/aiseka",
+    linkName: "AISEKA",
+    link: "https://aiseka.com/",
   },
 ];
 
